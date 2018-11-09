@@ -1,0 +1,38 @@
+{% extends "base_html.html" %}
+
+{% block content %}
+  <h1>{{ user.company }}'s Ad link Creator</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="uploaded_file">
+    <button type="submit">Upload</button>
+
+    <select name="template_name">
+    <option selected="selected" disabled>Select Template</option>
+      <option value="">None</option>
+
+        {% for key in ad_templates %}
+            <option value={{ key }}>{{key|lower}}</option>
+        {% endfor %}
+
+  </select>
+  </form>
+
+{% if uploaded_file_url %}
+    <table class="table">
+  <tbody>
+
+            {% for url in urls %}
+                <tr>
+      <th scope="row">URL:</th>
+                <td>{{ url }}</td>
+                  </tr>
+            {% endfor %}
+
+
+    {% endif %}
+
+
+
+{% endblock %}
