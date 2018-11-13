@@ -5,8 +5,8 @@
 
     <div class="d-flex justify-content-center align-items-center container ">
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input name="uploaded_file" type="file" class="custom-file-input" id="inputGroupFile02">
@@ -16,103 +16,88 @@
                 <div class="input-group-append">
                     <button type="submit" class="input-group-text" id="">Upload</button>
                 </div>
-        <!-- <input type="file" name="uploaded_file"  >
-        <button type="submit" class="btn btn-primary">Process CSV</button> -->
-    </div>
-    <div class="form-group">
-        <select name="template_name" class="custom-select">
-            <option selected="selected" disabled>Select Template</option>
-            <option value="">None</option>
+            </div>
+            <div class="form-group">
+                <select name="template_name" class="custom-select">
+                    <option selected="selected" disabled>Select Template</option>
+                    <option value="">None</option>
 
 
-            {% for key in ad_templates %}
-                <option value={{ key }}>{{ key|lower }}</option>
-            {% endfor %}
+                    {% for key in ad_templates %}
+                        <option value={{ key }}>{{ key|lower }}</option>
+                    {% endfor %}
 
-        </select>
-    </div>
-
-    <div id="kvpairs" class="form-group">
-
-        {% for k,v in link_dict_items %}
-            <div class="form-inline">
-            <input class="form-control" name="key_{{ k }}" type="text" value="{{ k }}">:<input class="form-control" name="value_{{ v }}"type="text" value="{{ v }}">
+                </select>
             </div>
 
+            <div id="kvpairs" class="form-group">
 
-        {% endfor %}
-        <button id="adKVButton" type="button" class="btn btn-secondary"onclick="addPair()">Add Key</button>
+                {% for k,v in link_dict_items %}
+                    <div class="form-inline">
+                        <input class="form-control" name="key_{{ k }}" type="text" value="{{ k }}">:<input
+                            class="form-control" name="value_{{ v }}" type="text" value="{{ v }}">
+                    </div>
+
+
+                {% endfor %}
+                <button id="adKVButton" type="button" class="btn btn-secondary" onclick="addPair()">Add Key</button>
+
+            </div>
+        </form>
+
 
     </div>
-    </form>
-
-
-
-      </div>
     {% if uploaded_file_url %}
         <table class="table">
-        <tbody>
+            <tbody>
 
-        {% for url in urls %}
-            <tr>
-                <th scope="row">URL:</th>
-                <td>{{ url }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
+            {% for url in urls %}
+                <tr>
+                    <th scope="row">URL:</th>
+                    <td>{{ url }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
 
     {% endif %}
 
 
-<script>
+    <script>
 
-    function addPair(){
-        container = document.getElementById("kvpairs");
-        var input = document.createElement("input");
-        var name = Math.floor(Math.random() * 10000).toString();
+        function addPair() {
+            container = document.getElementById("kvpairs");
+            var input = document.createElement("input");
+            var name = Math.floor(Math.random() * 10000).toString();
 
-        var button = document.getElementById("adKVButton");
+            var button = document.getElementById("adKVButton");
 
-        input.type = "text";
-        input.className = "key form-control";
-        input.name = "key_" + name;
-        var input2 = document.createElement("input");
-        input2.type = "text";
-        input2.className = "value form-control";
-        input2.name = "value_" + name;
+            input.type = "text";
+            input.className = "key form-control";
+            input.name = "key_" + name;
+            var input2 = document.createElement("input");
+            input2.type = "text";
+            input2.className = "value form-control";
+            input2.name = "value_" + name;
 
-        var div = document.createElement("div");
+            var div = document.createElement("div");
 
-        div.className = "form-inline";
+            div.className = "form-inline";
 
-        div.appendChild(input);
-        div.appendChild(document.createTextNode(":"));
-        div.appendChild(input2);
+            div.appendChild(input);
+            div.appendChild(document.createTextNode(":"));
+            div.appendChild(input2);
 
-        container.insertBefore(div, button)
+            container.insertBefore(div, button)
 
+        }
 
+        // bootstrap 4.1 requires jquery to have a custom file name in input field
+        $('.custom-file-input').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        });
 
-        {#container.insertBefore(input, button);#}
-        {#container.insertBefore(document.createTextNode(":"), button);#}
-        {#container.insertBefore(input2, button);#}
-        {#container.insertBefore(document.createElement("br"), button);#}
-
-
-
-
-    }
-    // bootstrap 4.1 requires jquery to have a custom file name in input field
-    $('.custom-file-input').on('change', function() {
-   let fileName = $(this).val().split('\\').pop();
-   $(this).next('.custom-file-label').addClass("selected").html(fileName);
-});
-
-
-
-
-</script>
+    </script>
 
 {% endblock %}
-
