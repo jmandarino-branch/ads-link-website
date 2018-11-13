@@ -26,6 +26,8 @@ def process_csv(request, file, template_name):
                 template = row.get(TEMPLATE_COL_NAME)
                 if template:
                     template = TEMPLATE_DICT.get(template.upper(), template_global)
+                else:
+                    template = template_global
                 del row[TEMPLATE_COL_NAME]
 
             link_data = merge_dictionaries(row, template)
