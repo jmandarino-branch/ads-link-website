@@ -9,7 +9,6 @@ class User(AbstractUser):
 
 class Company(BaseModel):
     name = models.CharField(null=False, max_length=50)
-    links = models.ManyToManyField('links.Link')
 
     class Meta:
         verbose_name_plural = 'Companies'

@@ -17,7 +17,7 @@ class Link(BaseModel):
 
 
 class LinkDefaults(BaseModel):
-    ad_link_dict = JSONField()
+    ad_link_dict = JSONField(help_text='make sure "base_url" is included in the json dict')
     ad_base_url = models.CharField(null=True, blank=True, max_length=25)
     company = models.OneToOneField('accounts.Company', on_delete=models.CASCADE, null=True)
 
