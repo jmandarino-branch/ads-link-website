@@ -25,6 +25,7 @@ def index(request):
 
 
 def simple_upload(request):
+    link_dict = request.user.company.linkdefaults.ad_link_dict
     if request.method == 'POST' and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
         urls = None
@@ -37,9 +38,14 @@ def simple_upload(request):
             'urls': urls,
             'uploaded_file_url': True,
             'user': request.user,
-            'ad_templates': TEMPLATE_DICT.keys()
+            'ad_templates': TEMPLATE_DICT.keys(),
+            'link_dict_items': link_dict.items()
         })
+    elif request.method == 'POST':
+        pass
     return render(request, 'index.html', {
         'user': request.user,
-        'ad_templates': TEMPLATE_DICT.keys()
+        'ad_templates': TEMPLATE_DICT.keys(),
+        'link_dict_items': link_dict.items()
+
     })

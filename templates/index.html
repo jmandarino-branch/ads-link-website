@@ -1,38 +1,79 @@
 {% extends "base_html.html" %}
 
 {% block content %}
-  <h1>{{ user.company }}'s Ad link Creator</h1>
+    <h1>{{ user.company }}'s Ad link Creator</h1>
 
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="uploaded_file">
-    <button type="submit">Upload</button>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="uploaded_file">
+        <button type="submit" class="btn btn-primary">Process CSV</button>
 
-    <select name="template_name">
-    <option selected="selected" disabled>Select Template</option>
-      <option value="">None</option>
+        <select name="template_name">
+            <option selected="selected" disabled>Select Template</option>
+            <option value="">None</option>
 
-        {% for key in ad_templates %}
-            <option value={{ key }}>{{key|lower}}</option>
-        {% endfor %}
 
-  </select>
-  </form>
-
-{% if uploaded_file_url %}
-    <table class="table">
-  <tbody>
-
-            {% for url in urls %}
-                <tr>
-      <th scope="row">URL:</th>
-                <td>{{ url }}</td>
-                  </tr>
+            {% for key in ad_templates %}
+                <option value={{ key }}>{{ key|lower }}</option>
             {% endfor %}
 
+        </select>
+
+    <div id="kvpairs">
+
+        {% for k,v in link_dict_items %}
+            <input name="key_{{ k }}" type="text" value="{{ k }}">:<input name="value_{{ v }}"type="text" value="{{ v }}"><br>
+
+
+        {% endfor %}
+    </div>
+
+    </form>
+        <button onclick="addPair()">Add Key</button>
+
+    {% if uploaded_file_url %}
+        <table class="table">
+        <tbody>
+
+        {% for url in urls %}
+            <tr>
+                <th scope="row">URL:</th>
+                <td>{{ url }}</td>
+            </tr>
+        {% endfor %}
 
     {% endif %}
 
+<script>
 
+    function addPair(){
+        container = document.getElementById("kvpairs");
+        var input = document.createElement("input");
+        var name = Math.floor(Math.random() * 10000).toString();
+
+        input.type = "text";
+        input.class = "key";
+        input.name = "key_" + name;
+        var input2 = document.createElement("input");
+        input2.type = "text";
+        input2.class = "value";
+        input2.name = "value_" + name;
+
+
+        container.appendChild(input);
+        container.appendChild(document.createTextNode(":"));
+        container.appendChild(input2);
+        container.appendChild(document.createElement("br"));
+
+
+
+
+    }
+
+
+
+
+</script>
 
 {% endblock %}
+
