@@ -15,8 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth.views import LoginView
+from django.views.generic.base import RedirectView
+from django.urls import reverse_lazy
+
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('links/', include('links.urls'))
+    path('adlinks/', include('links.urls'), name='links'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('login/', LoginView.as_view(), name="login"),
+    path('', RedirectView.as_view(url=reverse_lazy('adlinks')), name='go-to-links')
+
 ]

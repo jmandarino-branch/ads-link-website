@@ -1,0 +1,45 @@
+{% extends "base_html.html" %}
+
+{% block content %}
+    <!-- templates/registration/login.html -->
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                <h2>Branch's Adlink Creator</h2>
+                <form name="LoginForm" method="post">
+                    {% csrf_token %}
+                    {% if next %}
+                        <input type="hidden" name="next" value="{{ next }}"/>
+                    {% endif %}
+                    <div class="form-group">
+                        <label class="control-label" for="username">Username</label>
+                        <div class="controls">
+                            <input class="form-control" type="text" id="username" name="username"
+                                   placeholder="Username">
+                        </div>
+
+                        <label class="control-label" for="password">Password</label>
+                        <div class="controls">
+                            <input class="form-control" type="password" name="password" id="password"
+                                   placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="controls">
+                            <button type="submit" class="btn btn-success btn-block">Login</button>
+                        </div>
+                    </div>
+
+                    <br>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body, html {
+            height: 100%;
+        }
+    </style>
+{% endblock %}
+

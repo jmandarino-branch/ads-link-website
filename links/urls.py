@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import index, simple_upload
+from .views import adlinks
 
 
 urlpatterns = [
-    path('', simple_upload, name='simple_upload'),
+    path('', adlinks, name='adlinks'),
 ]
