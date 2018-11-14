@@ -3,6 +3,7 @@
 {% block content %}
     <h1 class="text-center">{{ user.company }}'s Ad link Creator</h1>
 
+    <!-- this is the form -->
     <div class="d-flex justify-content-center align-items-center container ">
 
         <form method="post" enctype="multipart/form-data">
@@ -14,10 +15,11 @@
 
                 </div>
                 <div class="input-group-append">
-                    <button type="submit" class="input-group-text" id="">Process CSV</button>
+                    <button type="submit" class="input-group-text btn-primary" id="">Process CSV</button>
                 </div>
             </div>
             <div class="form-group">
+                <!-- select with values from ad_templates -->
                 <select name="template_name" class="custom-select">
                     <option selected="selected" disabled>Select Template</option>
                     <option value="">None</option>
@@ -31,6 +33,7 @@
             </div>
 
             <div id="kvpairs" class="form-group">
+                <!-- Key value pairs. the name of the items are based of what the key is -->
 
                 {% for k,v in link_dict_items %}
                     <div class="form-inline mb-1">
@@ -43,7 +46,8 @@
 
 
                 {% endfor %}
-                            <button id="adKVButton" type="button" class="btn btn-secondary mt-1" onclick="addPair()">Add Key</button>
+                <button id="adKVButton" type="button" class="btn btn-secondary mt-1" onclick="addPair()">Add Key
+                </button>
 
             </div>
 
@@ -80,7 +84,7 @@
             container = document.getElementById("kvpairs");
             var input = document.createElement("input");
             // random name for kv pair as hex string
-            var name = (Math.random()*0xFFFFFF<<0).toString(16);
+            var name = (Math.random() * 0xFFFFFF << 0).toString(16);
 
             // create button
             var button = document.getElementById("adKVButton");
@@ -88,7 +92,7 @@
             // set variables for create elements
             input.type = "text";
             input.className = "key form-control";
-            input.name = "key_" + name;
+            input.name = "key_" + name; //names the input field for the key based on hex string
             var input2 = document.createElement("input");
             input2.type = "text";
             input2.className = "value form-control";
@@ -98,15 +102,14 @@
             var removeButton = document.createElement("button");
             removeButton.type = "button";
             removeButton.setAttribute('onClick', 'removePair(this)');
-            removeButton.className="close";
-            removeButton.setAttribute("aria-label","Close");
+            removeButton.className = "close";
+            removeButton.setAttribute("aria-label", "Close");
             //lazy way to do it
-            removeButton.innerHTML= '<span aria-hidden=\"true\">&times;</span>';
+            removeButton.innerHTML = '<span aria-hidden=\"true\">&times;</span>';
             // wrap components in a form-inline dive to make the elements inline
             var div = document.createElement("div");
 
             div.className = "form-inline mb-1";
-
 
 
             div.appendChild(input);
