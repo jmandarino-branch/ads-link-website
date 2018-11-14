@@ -31,7 +31,7 @@ def process_csv(request, file, template_name):
                 del row[TEMPLATE_COL_NAME]
 
             link_data = merge_dictionaries(row, template)
-            url = base_url + parse.urlencode(link_data, safe='{}:')  # safe characters do not get encoded
+            url = base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
             urls.append(url)
 
     return urls
