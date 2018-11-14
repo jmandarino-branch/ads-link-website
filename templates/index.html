@@ -35,7 +35,7 @@
                 {% for k,v in link_dict_items %}
                     <div class="form-inline mb-1">
                         <input class="form-control" name="key_{{ k }}" type="text" value="{{ k }}">:<input
-                            class="form-control" name="value_{{ v }}" type="text" value="{{ v }}">
+                            class="form-control" name="value_{{ k }}" type="text" value="{{ v }}">
                         <button type="button" onclick="removePair(this)" class="close" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -79,8 +79,8 @@
             // get container of kv list
             container = document.getElementById("kvpairs");
             var input = document.createElement("input");
-            // random name for kv pair
-            var name = Math.floor(Math.random() * 10000).toString();
+            // random name for kv pair as hex string
+            var name = (Math.random()*0xFFFFFF<<0).toString(16);
 
             // create button
             var button = document.getElementById("adKVButton");
