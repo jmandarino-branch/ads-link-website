@@ -33,7 +33,7 @@
             <div id="kvpairs" class="form-group">
 
                 {% for k,v in link_dict_items %}
-                    <div class="form-inline">
+                    <div class="form-inline mb-1">
                         <input class="form-control" name="key_{{ k }}" type="text" value="{{ k }}">:<input
                             class="form-control" name="value_{{ v }}" type="text" value="{{ v }}">
                         <button type="button" onclick="removePair(this)" class="close" aria-label="Close">
@@ -43,9 +43,11 @@
 
 
                 {% endfor %}
-                <button id="adKVButton" type="button" class="btn btn-secondary" onclick="addPair()">Add Key</button>
+                            <button id="adKVButton" type="button" class="btn btn-secondary mt-1" onclick="addPair()">Add Key</button>
 
             </div>
+
+
         </form>
 
 
@@ -103,14 +105,14 @@
             // wrap components in a form-inline dive to make the elements inline
             var div = document.createElement("div");
 
-            div.className = "form-inline";
+            div.className = "form-inline mb-1";
 
 
 
             div.appendChild(input);
             div.appendChild(document.createTextNode(":"));
             div.appendChild(input2);
-            div.appendChild(removeButton)
+            div.appendChild(removeButton);
 
             container.insertBefore(div, button)
 
