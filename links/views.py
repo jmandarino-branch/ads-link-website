@@ -13,7 +13,7 @@ from .utils import process_csv
 @login_required(login_url='/login/')
 def adlinks(request):
     link_dict = request.user.company.linkdefaults.ad_link_dict
-    if request.method == 'POST' and request.FILES['uploaded_file']:
+    if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
         urls = None
         template_name = request.POST.get('template_name', None)
@@ -29,7 +29,10 @@ def adlinks(request):
             'link_dict_items': link_dict.items()
         })
     elif request.method == 'POST':
-        pass
+        for k,v in request.POST.dict().items():
+            print(k,v)
+            # TODO: Parse KV pairs
+
     return render(request, 'index.html', {
         'user': request.user,
         'ad_templates': TEMPLATE_DICT.keys(),
