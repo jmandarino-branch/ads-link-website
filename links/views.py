@@ -1,9 +1,12 @@
 import os
+import mimetypes
 from urllib import parse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.http import StreamingHttpResponse
+from wsgiref.util import FileWrapper
 
 from branchlinks.link_templates import TEMPLATE_DICT
 
@@ -43,10 +46,17 @@ def adlinks(request):
         post_dict = request.POST.dict()
         pairs = get_key_value_pairs_from_html(post_dict)
 
+        export_to_file = bool(request.POST.get('fileExport', False))
+
         template_name = request.POST.get('template_name', None)  # check if a template is to be used
         if file.name.endswith('.csv'):
             path = default_storage.save(os.path.join('tmp', file.name), ContentFile(file.read()))  # store a file temporarily
-            urls = process_csv(request, path, template_name, pairs)
+            urls, outfile_name = process_csv(request, path, template_name, pairs, export_to_file)
+
+            if outfile_name:
+                response = download_file(outfile_name)
+                return response
+
 
         return render(request, 'index.html', {
             'urls': urls,
@@ -78,3 +88,13 @@ def adlinks(request):
         'link_dict_items': link_dict.items()
 
     })
+
+
+def download_file(outfile_name):
+    chunk_size = 8192
+    filename = os.path.basename(outfile_name)
+    response = StreamingHttpResponse(FileWrapper(open(outfile_name, 'rb'), chunk_size),
+                           content_type=mimetypes.guess_type(outfile_name)[0])
+    response['Content-Length'] = os.path.getsize(outfile_name)
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    return response

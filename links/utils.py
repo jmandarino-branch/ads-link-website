@@ -1,23 +1,32 @@
 import csv
+import os
+from datetime import datetime
 from urllib import parse
 
 from branchlinks.link_templates import TEMPLATE_DICT
+from branchlinks.settings import BASE_DIR
 
 BASE_URL_COL_NAME = 'base_url'
 TEMPLATE_COL_NAME = 'template_name'
 
 
-def process_csv(request, file, template_name, query_params):
+def process_csv(request, file, template_name, query_params, to_file=False):
     # declare variables the c way!
     urls = []
     template_global = TEMPLATE_DICT.get(template_name, {})
     preset_values = {}
     base_url = None
+    outfile = None
 
     if request.user and hasattr(request.user, 'company'):
         # if we have preset values these take priority
         preset_values = merge_dictionaries(query_params, request.user.company.linkdefaults.ad_link_dict)
         base_url = preset_values.get('base_url', None)
+
+    if to_file:
+        output_filename = os.path.join(BASE_DIR, 'tmp', '{}{}{}'.format(request.user.company.name.replace(' ', '-'),
+                                                                        datetime.now().strftime("%Y-%m-%d"), '.csv'))
+        outfile = open(output_filename, 'w')
 
     with open(file) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
@@ -41,9 +50,14 @@ def process_csv(request, file, template_name, query_params):
             updated_row = merge_dictionaries(preset_values, row)
             link_data = merge_dictionaries(updated_row, template)
             url = row_base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
-            urls.append(url)
-
-    return urls
+            if to_file:
+                outfile.write(url+',\n')
+            else:
+                urls.append(url)
+    if outfile:
+        outfile.close()
+        return urls, outfile.name
+    return urls, None
 
 
 def process_kv_only(pairs, template_name):
