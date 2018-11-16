@@ -37,6 +37,21 @@ def process_csv(request, file, template_name):
     return urls
 
 
+def process_kv_only(pairs, template_name):
+    base_url = pairs.get(BASE_URL_COL_NAME, None)
+    if base_url is None:
+        return 'ERROR: Please include base_url in your keys'
+    del pairs[BASE_URL_COL_NAME]
+
+    template = None
+    if template_name:
+        template = TEMPLATE_DICT.get(template_name.upper(), {})
+
+    link_data = merge_dictionaries(pairs, template)
+
+    return base_url + parse.urlencode(link_data, safe='{}')
+
+
 def merge_dictionaries(row_data, default):
     """Merge d2 into d1, where d1 has priority
 

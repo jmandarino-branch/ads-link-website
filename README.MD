@@ -21,3 +21,7 @@
 ## Running the Server (and Migrations)
 - `./manage.py migrate`
 - `./manage.py runserver`
+
+
+## Track Progress via Trello:
+https://trello.com/b/e3VT4eDV/ad-link-creator
