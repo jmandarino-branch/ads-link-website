@@ -68,17 +68,21 @@
 
     </div>
     {% if uploaded_file_url %}
+        <div class="table-responsive fixed-table-body">
         <table class="table">
             <tbody>
 
             {% for url in urls %}
-                <tr>
-                    <th scope="row">URL:</th>
-                    <td>{{ url }}</td>
+                <tr class="row">
+                    <th scope="col">URL:</th>
+                    <td>{{ url.0 }}</td>
+                    <th scope="col">URI:</th>
+                    <td>{{ url.1 }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+        </div>
 
     {% endif %}
 

@@ -1,4 +1,6 @@
+import base64
 import csv
+import json
 import os
 from datetime import datetime
 from urllib import parse
@@ -27,6 +29,7 @@ def process_csv(request, file, template_name, query_params, to_file=False):
         output_filename = os.path.join(BASE_DIR, 'tmp', '{}{}{}'.format(request.user.company.name.replace(' ', '-'),
                                                                         datetime.now().strftime("%Y-%m-%d"), '.csv'))
         outfile = open(output_filename, 'w')
+        outfile.write('URL,URI,\n')
 
     with open(file) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
@@ -50,10 +53,12 @@ def process_csv(request, file, template_name, query_params, to_file=False):
             updated_row = merge_dictionaries(preset_values, row)
             link_data = merge_dictionaries(updated_row, template)
             url = row_base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
+
+            data = (url, row_base_url+link_data_uri(link_data))
             if to_file:
-                outfile.write(url+',\n')
+                outfile.write('{},{},\n'.format(data[0],data[1]))
             else:
-                urls.append(url)
+                urls.append(data)
     if outfile:
         outfile.close()
         return urls, outfile.name
@@ -72,7 +77,7 @@ def process_kv_only(pairs, template_name):
 
     link_data = merge_dictionaries(pairs, template)
 
-    return base_url + parse.urlencode(link_data, safe='{}')
+    return (base_url + parse.urlencode(link_data, safe='{}'),)
 
 
 def merge_dictionaries(row_data, default):
@@ -90,3 +95,15 @@ def merge_dictionaries(row_data, default):
         return default
 
     return {**default, **row_data}
+
+def link_data_uri(link_data):
+    """Take Link Data and uri encode it
+
+    :param link_data: Dictionary of link data
+    :return:
+    """
+    unencoded = json.dumps(link_data)
+    b64_encoded = base64.b64encode(unencoded.encode())
+
+    # uri encode
+    return parse.quote(b64_encoded)
