@@ -8,7 +8,7 @@ from django.shortcuts import render
 from branchlinks.link_templates import TEMPLATE_DICT
 
 from .models import Link, LinkDefaults
-from .utils import process_csv, process_kv_only
+from .utils import merge_dictionaries, process_csv, process_kv_only
 
 
 # because of how fragile this could be its best to define for some kind of consistency
@@ -37,11 +37,16 @@ def adlinks(request):
     link_dict = request.user.company.linkdefaults.ad_link_dict  # fetch link defaults from DB
     if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
-        urls = None # to hold urls to output
+        urls = None  # to hold urls to output
+
+        # handle extra inputs
+        post_dict = request.POST.dict()
+        pairs = get_key_value_pairs_from_html(post_dict)
+
         template_name = request.POST.get('template_name', None)  # check if a template is to be used
         if file.name.endswith('.csv'):
-            path = default_storage.save(os.path.join('tmp', file.name), ContentFile(file.read())) #  store a file temporarily
-            urls = process_csv(request, path, template_name)
+            path = default_storage.save(os.path.join('tmp', file.name), ContentFile(file.read()))  # store a file temporarily
+            urls = process_csv(request, path, template_name, pairs)
 
         return render(request, 'index.html', {
             'urls': urls,
