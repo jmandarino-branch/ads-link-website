@@ -87,7 +87,7 @@ def process_kv_only(pairs, template_id, request):
 
     link_data = merge_dictionaries(pairs, template)
 
-    return (base_url + parse.urlencode(link_data, safe='{}'),)
+    return (base_url + parse.urlencode(link_data, safe='{}'),base_url+link_data_uri(link_data))
 
 
 def merge_dictionaries(row_data, default):

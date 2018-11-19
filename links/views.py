@@ -13,26 +13,12 @@ from branchlinks.link_templates import TEMPLATE_DICT
 from .models import Link, LinkDefault
 from .utils import merge_dictionaries, process_csv, process_kv_only
 
+from links.models import Template
+
 
 # because of how fragile this could be its best to define for some kind of consistency
 HTML_KEY = 'key_'
 HTML_VALUE = 'value_'
-
-def get_key_value_pairs_from_html(dictionary):
-    """Process HTML input fields to find KV pairs
-
-    process the key values pairs. Keys are denoted by the input fields name="key_(key_name)"
-    values are denoted with input fields name="value_(value_name)"
-    :param dictionary: (dict{ str:str }) values from request data sent by frontend
-    :return: dictionary with properly named KV pairs
-    """
-    pairs = {}
-    for k in dictionary.keys():
-        if HTML_KEY in k:
-            key_name = k.split(HTML_KEY, 1)[1]  # split only once on the
-            value_name = HTML_VALUE + key_name
-            pairs[dictionary[k]] = dictionary[value_name]
-    return pairs
 
 
 @login_required(login_url='/login/')
@@ -91,6 +77,31 @@ def adlinks(request):
 
     })
 
+
+@login_required(login_url='/login/')
+def help_page(request):
+    return render(request, 'adlink_help.html', {
+        'user': request.user,
+        'templates': Template.objects.filter(company=request.user.company)
+
+    })
+
+
+def get_key_value_pairs_from_html(dictionary):
+    """Process HTML input fields to find KV pairs
+
+    process the key values pairs. Keys are denoted by the input fields name="key_(key_name)"
+    values are denoted with input fields name="value_(value_name)"
+    :param dictionary: (dict{ str:str }) values from request data sent by frontend
+    :return: dictionary with properly named KV pairs
+    """
+    pairs = {}
+    for k in dictionary.keys():
+        if HTML_KEY in k:
+            key_name = k.split(HTML_KEY, 1)[1]  # split only once on the
+            value_name = HTML_VALUE + key_name
+            pairs[dictionary[k]] = dictionary[value_name]
+    return pairs
 
 def download_file(outfile_name):
     chunk_size = 8192
