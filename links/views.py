@@ -10,7 +10,7 @@ from wsgiref.util import FileWrapper
 
 from branchlinks.link_templates import TEMPLATE_DICT
 
-from .models import Link, LinkDefaults
+from .models import Link, LinkDefault
 from .utils import merge_dictionaries, process_csv, process_kv_only
 
 

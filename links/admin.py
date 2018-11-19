@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from .models import (
     Link,
-    LinkDefaults
+    LinkDefault,
+    Template
 )
 # Register your models here.
 
@@ -10,6 +11,12 @@ from .models import (
 class LinkAdmin(admin.ModelAdmin):
     list_filter = ('id',)
 
-@admin.register(LinkDefaults)
+@admin.register(LinkDefault)
 class LinkDefaultsAdmin(admin.ModelAdmin):
-    list_filter = ('id',)
+    list_display = ('company',)
+
+
+@admin.register(Template)
+class TemplateAdmin(admin.ModelAdmin):
+    list_filter = ('type',)
+    list_display = ('name', 'type',)

@@ -1,26 +1,31 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from links.models import LinkDefaults
+from links.models import LinkDefault
 
 from .models import (
     User,
     Company,
 )
 
+from links.models import Template
+
 
 class LinkDefaultsInline(admin.TabularInline):
-    model = LinkDefaults
+    model = LinkDefault
+
+class TemplateInline(admin.TabularInline):
+    model = Company.templates.through
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     list_filter = ('name',)
-    inlines = [LinkDefaultsInline]
+    inlines = [LinkDefaultsInline, TemplateInline]
+
 
 
 class MyUserAdmin(UserAdmin):
     model = User
-
     fieldsets = UserAdmin.fieldsets + (
             (None, {'fields': ('company',)}),
     )

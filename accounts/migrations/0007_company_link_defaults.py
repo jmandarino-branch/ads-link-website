@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='company',
             name='link_defaults',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='links.LinkDefaults'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='links.models.LinkDefault'),
         ),
     ]
