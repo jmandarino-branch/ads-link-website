@@ -8,22 +8,27 @@ from urllib import parse
 from branchlinks.link_templates import TEMPLATE_DICT
 from branchlinks.settings import BASE_DIR
 
+from links.models import Template
+
 BASE_URL_COL_NAME = 'base_url'
 TEMPLATE_COL_NAME = 'template_name'
 
 
-def process_csv(request, file, template_name, query_params, to_file=False):
+def process_csv(request, file, template_id, query_params, to_file=False):
     # declare variables the c way!
     urls = []
-    template_global = TEMPLATE_DICT.get(template_name, {})
+    if template_id:
+        template_global = Template.objects.get(id=int(template_id), company=request.user.company).template_data
+    else:
+        template_global = None
     preset_values = {}
     base_url = None
     outfile = None
 
     if request.user and hasattr(request.user, 'company'):
         # if we have preset values these take priority
-        preset_values = merge_dictionaries(query_params, request.user.company.linkdefaults.ad_link_dict)
-        base_url = preset_values.get('base_url', None)
+        # preset_values = merge_dictionaries(query_params, request.user.company.linkdefault.ad_link_dict)
+        base_url = query_params.get('base_url', None)
 
     if to_file:
         output_filename = os.path.join(BASE_DIR, 'tmp', '{}{}{}'.format(request.user.company.name.replace(' ', '-'),
@@ -43,14 +48,19 @@ def process_csv(request, file, template_name, query_params, to_file=False):
                 del row[BASE_URL_COL_NAME]
 
             if TEMPLATE_COL_NAME in row:
-                template = row.get(TEMPLATE_COL_NAME)
+                template = row.get(TEMPLATE_COL_NAME, None)
                 if template:
-                    template = TEMPLATE_DICT.get(template.upper(), template_global)
+                    template_db = Template.objects.filter(search_name=template, company=request.user.company)
+
+                    if template_db:
+                        template = template_db.first().template_data
+                    else:
+                        template = template_global
                 else:
                     template = template_global
                 del row[TEMPLATE_COL_NAME]
 
-            updated_row = merge_dictionaries(preset_values, row)
+            updated_row = merge_dictionaries(query_params, row)
             link_data = merge_dictionaries(updated_row, template)
             url = row_base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
 
@@ -65,15 +75,15 @@ def process_csv(request, file, template_name, query_params, to_file=False):
     return urls, None
 
 
-def process_kv_only(pairs, template_name):
+def process_kv_only(pairs, template_id, request):
     base_url = pairs.get(BASE_URL_COL_NAME, None)
     if base_url is None:
         return 'ERROR: Please include base_url in your keys'
     del pairs[BASE_URL_COL_NAME]
 
     template = None
-    if template_name:
-        template = TEMPLATE_DICT.get(template_name.upper(), {})
+    if template_id:
+        template = Template.objects.get(id=int(template_id), company=request.user.company).template_data
 
     link_data = merge_dictionaries(pairs, template)
 

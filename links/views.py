@@ -37,7 +37,9 @@ def get_key_value_pairs_from_html(dictionary):
 
 @login_required(login_url='/login/')
 def adlinks(request):
-    link_dict = request.user.company.linkdefaults.ad_link_dict  # fetch link defaults from DB
+    link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
+    ad_templates = request.user.company.templates.all()
+
     if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
         urls = None  # to hold urls to output
@@ -48,10 +50,10 @@ def adlinks(request):
 
         export_to_file = bool(request.POST.get('fileExport', False))
 
-        template_name = request.POST.get('template_name', None)  # check if a template is to be used
+        template_id = request.POST.get('template_name', None)  # check if a template is to be used
         if file.name.endswith('.csv'):
             path = default_storage.save(os.path.join('tmp', file.name), ContentFile(file.read()))  # store a file temporarily
-            urls, outfile_name = process_csv(request, path, template_name, pairs, export_to_file)
+            urls, outfile_name = process_csv(request, path, template_id, pairs, export_to_file)
 
             if outfile_name:
                 response = download_file(outfile_name)
@@ -62,21 +64,21 @@ def adlinks(request):
             'urls': urls,
             'uploaded_file_url': True,
             'user': request.user,
-            'ad_templates': TEMPLATE_DICT.keys(),
+            'ad_templates': ad_templates,
             'link_dict_items': link_dict.items()
         })
     elif request.method == 'POST':
         post_dict = request.POST.dict()
         pairs = get_key_value_pairs_from_html(post_dict)
-        template_name = request.POST.get('template_name', None)  # check if a template is to be used
+        template_id = request.POST.get('template_name', None)  # check if a template is to be used
 
-        url = process_kv_only(pairs, template_name)
+        url = process_kv_only(pairs, template_id, request)
 
         return render(request, 'index.html', {
             'urls': [url],
             'uploaded_file_url': True,
             'user': request.user,
-            'ad_templates': TEMPLATE_DICT.keys(),
+            'ad_templates': ad_templates,
             'link_dict_items': link_dict.items()
         })
 
@@ -84,7 +86,7 @@ def adlinks(request):
 
     return render(request, 'index.html', {
         'user': request.user,
-        'ad_templates': TEMPLATE_DICT.keys(),
+        'ad_templates': ad_templates,
         'link_dict_items': link_dict.items()
 
     })

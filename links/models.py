@@ -32,10 +32,13 @@ class LinkDefault(BaseModel):
 
 class Template(BaseModel):
     name = models.CharField(max_length=25, help_text='The Name of a template')
-    company = models.ManyToManyField('accounts.Company', related_name='templates')
+    company = models.ManyToManyField('accounts.Company', related_name='templates',
+                                     help_text='The companies who can view this')
     template_data = JSONField(help_text='json dict of template data to use')
-    type = models.CharField(choices=TEMPLATE_TYPE, max_length=15)
-
+    type = models.CharField(choices=TEMPLATE_TYPE, max_length=15,
+                            help_text='The type of link this template is associated with')
+    search_name = models.CharField(max_length=25, blank=True,
+                                   help_text='the name for this on a CSV to override a general template')
 
     def __str__(self):
         return self.name

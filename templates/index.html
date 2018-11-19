@@ -26,9 +26,8 @@
                             <option selected="selected" disabled>Select Template</option>
                             <option value="">None</option>
 
-
                             {% for key in ad_templates %}
-                                <option value={{ key }}>{{ key|lower }}</option>
+                                <option value={{ key.id}}>{{ key }}</option>
                             {% endfor %}
 
                         </select>
