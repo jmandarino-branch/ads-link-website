@@ -68,86 +68,108 @@
 
     </div>
     {% if uploaded_file_url %}
-        <div class="table-responsive fixed-table-body">
-        <table class="table">
-            <tbody>
 
-            {% for url in urls %}
-                <tr class="row">
-                    <th scope="col">URL:</th>
-                    <td>{{ url.0 }}</td>
-                    <th scope="col">URI:</th>
-                    <td>{{ url.1 }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>URL:</th>
+                            <th>URI:</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for url in urls %}
+                            <tr>
+                                <td class="word-wrap">{{ url.0 }}</td>
+                                <td class="word-wrap">{{ url.1 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
     {% endif %}
 
 
-    <script>
+<script>
 
-        function removePair(context) {
-            //remove elements parent. for use with buttons
-            context.parentElement.remove()
-        }
+    function removePair(context) {
+        //remove elements parent. for use with buttons
+        context.parentElement.remove()
+    }
 
-        function addPair() {
-            // get container of kv list
-            container = document.getElementById("kvpairs");
-            var input = document.createElement("input");
-            // random name for kv pair as hex string
-            var name = (Math.random() * 0xFFFFFF << 0).toString(16);
+    function addPair() {
+        // get container of kv list
+        container = document.getElementById("kvpairs");
+        var input = document.createElement("input");
+        // random name for kv pair as hex string
+        var name = (Math.random() * 0xFFFFFF << 0).toString(16);
 
-            // create button
-            var button = document.getElementById("adKVButton");
+        // create button
+        var button = document.getElementById("adKVButton");
 
-            // set variables for create elements
-            input.type = "text";
-            input.className = "key form-control";
-            input.name = "key_" + name; //names the input field for the key based on hex string
-            var input2 = document.createElement("input");
-            input2.type = "text";
-            input2.className = "value form-control";
-            input2.name = "value_" + name;
+        // set variables for create elements
+        input.type = "text";
+        input.className = "key form-control";
+        input.name = "key_" + name; //names the input field for the key based on hex string
+        var input2 = document.createElement("input");
+        input2.type = "text";
+        input2.className = "value form-control";
+        input2.name = "value_" + name;
 
-            // each K-V pair has a remove button
-            var removeButton = document.createElement("button");
-            removeButton.type = "button";
-            removeButton.setAttribute('onClick', 'removePair(this)');
-            removeButton.className = "close";
-            removeButton.setAttribute("aria-label", "Close");
-            //lazy way to do it
-            removeButton.innerHTML = '<span aria-hidden=\"true\">&times;</span>';
-            // wrap components in a form-inline dive to make the elements inline
-            var div = document.createElement("div");
+        // each K-V pair has a remove button
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.setAttribute('onClick', 'removePair(this)');
+        removeButton.className = "close";
+        removeButton.setAttribute("aria-label", "Close");
+        //lazy way to do it
+        removeButton.innerHTML = '<span aria-hidden=\"true\">&times;</span>';
+        // wrap components in a form-inline dive to make the elements inline
+        var div = document.createElement("div");
 
-            div.className = "form-inline mb-1";
+        div.className = "form-inline mb-1";
 
 
-            div.appendChild(input);
-            div.appendChild(document.createTextNode(":"));
-            div.appendChild(input2);
-            div.appendChild(removeButton);
+        div.appendChild(input);
+        div.appendChild(document.createTextNode(":"));
+        div.appendChild(input2);
+        div.appendChild(removeButton);
 
-            container.insertBefore(div, button)
+        container.insertBefore(div, button)
 
-        }
+    }
 
-        // bootstrap 4.1 requires jquery to have a custom file name in input field
-        $('.custom-file-input').on('change', function () {
-            let fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName);
-        });
+    // bootstrap 4.1 requires jquery to have a custom file name in input field
+    $('.custom-file-input').on('change', function () {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
 
-    </script>
+</script>
 
-        <style>
-        button.close{
-            padding-left: 5px;
-        }
-    </style>
+<style>
+    button.close {
+        padding-left: 5px;
+    }
+
+    .word-wrap {
+        word-break: break-all;
+    / / word-wrap: break-word;
+    / / overflow-wrap: break-word;
+    }
+
+    .no-wrap {
+        white-space: nowrap;
+    }
+
+    .fixed {
+        table-layout: fixed;
+    }
+</style>
 
 {% endblock %}
