@@ -10,123 +10,203 @@
 
         <div class="row">
 
-<div class="row">
-    <div class="col">
+            <div class="row">
+                <div class="col">
 
 
-            <h3>How to use</h3>
+                    <h3>How to use</h3>
 
 
-            <ol>
+                    <ol>
 
 
-                <li>Bulk link creation</li>
-                <li>single link creation</li>
-                <li>Templates</li>
-            </ol>
+                        <li><a href="#bulk-link-creation">Bulk link creation</a></li>
+                        <li><a href="#single-link">Single link creation</a></li>
+                        <li><a href="#templates">Templates</a></li>
+                        <li><a href="#advanced-templates">Advanced Template Usage</a></li>
+                    </ol>
+                </div>
+            </div>
+            <br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="bulk-link-creation">Bulk link creation (using a CSV)</h4>
+                    <p>
+                        First and foremost <code>base_url</code> must be defined either in the query parameters or in
+                        the
+                        CSV
+
+                        Formatting the CSV:
+
+                        The first row of your CSV will be a Key's of your query parameters
+
+                        all follwing rows will be the values to which the keys match with:
+                    <table class="table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <td>base_url</td>
+                            <td>~campaign</td>
+                            <td>key1</td>
+                            <td>key2</td>
+                        </tr>
+
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>https://company.app.link/3p?</td>
+                            <td>Facebook</td>
+                            <td>value1</td>
+                            <td>value2</td>
+                        </tr>
+
+                        </tbody>
 
 
+                    </table>
 
-            <h4>bulk link creation (using a CSV)</h4>
+                    </p>
+                    <p>
+                        <samp>Output:
+                            <code>https://company.app.link/3p?%7Ecampaign=Facebook&key1=value1&key2=value2</code>
+                        </samp>
+                    </p>
+                    <p>
+                        Links will be created by appending all the query parameters to the <code>base_url</code> and
+                        then url encoding it
+                        this will allow you to use links in your ads.
 
-            Most importantly <code>base_url</code> must be defined either in the query parameters or in the CSV
+                        When you click "Build links" If you selected a file it attempt to create all the links in the
+                        csv you provided,
+                        appending any templates if they are selected.
 
-            Formatting the CSV:
+                        With "Download Links as file" selected you will get a csv file of the links created.
 
-        The first row of your CSV will be a Key's of your query parameters
+                        If there are any query Parameters filled out these will be replaced by values in the csv.
 
-        all follwing rows will be the values to which the keys match with:
-            <code>[[ insert image here ]]</code>
+                        For example if the uploaded CSV contains a <code>base_url</code> and the query parameters are
+                        filled out to contain
+                        a <code>base_url</code> the value in the CSV will be appended to the links.
+                    </p>
 
+                    <p><strong>IMPORTANT:</strong> ANY value not found in the CSV but found in the Query parameters will
+                        be appended to all your links.
 
-            Links will be created by appending all the query parameters to the <code>base_url</code> and then url encoding it
-        this will allow you to use links in your ads.
+                        For example if your CSV is missing the <code>~campaign</code> but you specified a campaign tag
+                        in the query params field, this value
+                        will be appended.
+                    </p>
+                    <p>
+                        If no CSV is presented we attempt to make links from the Query Parameters
+                    </p>
+                </div>
+            </section>
+            <br><br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="single-link">Single link creation (using Query Parameters)</h4>
 
-        When you click "Build links" If you selected a file it attempt to create all the links in the csv you provided,
-        appending any templates if they are selected.
+                    <p>If no CSV is uploaded when you click on "Build links" we attempt to make a link from the Query
+                        Parameters.
 
-        With "Download Links as file" selected you will get a csv file of the links created.
+                        The default Query Paramter values are populated by Branch for your account specifically!
 
-        If there are any query Parameters filled out these will be replaced by values in the csv.
+                        If there is no <code>base_url</code> specified this method will fail.
 
-        For example if the uploaded CSV contains a <code>base_url</code> and the query parameters are filled out to contain
-        a <code>base_url</code> the value in the CSV will be appended to the links.
+                    <p>Much the like the CSV we attempt to append all the query parameters listed to the base url and
+                        then url encode it.
 
-        IMPORTANT: ANY value not found in the CSV but found in the Query parameters will be appened to all your links.
+                        You can add and remove all parameters you want.
 
-        For example if your CSV is missing the <code>~campaign</code> but you specified a campaign tag in the query params, this value
-        will be appended.
+                        <strong>These urls will only print out to screen</strong></p>
 
-        If no CSV is presented we attempt to make links from the Query Parameters
+                </div>
+            </section>
+            <br><br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="templates">How To Use Templates</h4>
 
+                    <p>Your Account ({{ user }}) has been given access to the following templates:</p>
 
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Template</th>
+                            <th>template_name (for use in csv)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if templates %}
+                            {% for template in templates %}
+                                <tr>
+                                    <td>{{ template }}</td>
+                                    <td>{{ template.search_name }}</td>
 
-         <h4>Single link creation (using Query Parameters)</h4>
+                                </tr>
+                            {% endfor %}
 
-        If no CSV is uploaded when you click on "Build links" we attempt to make a link from the Query Parameters.
-
-        The default Query Paramter values are populated by Branch for your account specifically!
-
-            If there is no <code>base_url</code> specified this method will fail.
-
-        Much the like the CSV we attempt to append all the query parameters listed to the base url and then url encode it.
-
-        You can add and remove all parameters you want.
-
-    These urls will only print out to screen
-
-
-        <h4>Using Templates</h4>
-
-    Your Account has been given access to the following templates:<br>
-    <code>
-                {% if templates %}
-                {% for template in templates %}
-
-                    {{ template }} -> {{ template.search_name }}<br>
-                {% endfor %}
-
-            {% endif %}
-    </code>
-
-    These are easy defaults that you can append to any Link (those created by CSV or one time created links) and will apply to
-    ALL LINK created when selected.*
-
-    These contain default values just incase you forget to include them. If you are using a template for Facebook Ads and
-        forget to use a <code>~channel</code> tag in your CSV or Query paramaters we have templates that will append this for you.
-
-    IMPORTANT: All values that are in CSV's or query paramaters take will overwrite the values in the templates.
-
-
-    <h4>Overwriting Templates in CSV's</h4>
-
-    A Template can be overwritten. To do this please define a <code>template_name</code>. The values can be:
-
-    Any of the Template Names as a reminder here they are again:
-    <code>
-            {% if templates %}
-                {% for template in templates %}
-
-                    {{ template.search_name }}<br>
-                {% endfor %}
-
-            {% endif %}
-    </code>
-
-    If you define <code>template_name</code> in your CSV and don't append a value to the column whatever template you selected
-    from the upload screen will apply to that link. If you want to override a specific link you can use any of the values listed above.
-
-    Another use of this feature is manually defining each link in your csv. This is possible by making sure every line of the csv
-    has a properly filled out <code>template_name</code> column.
+                        {% endif %}
+                        </tbody>
+                    </table>
 
 
+                    These are easy defaults that you can append to any Link (those created by CSV or one time created
+                    links) and will apply to
+                    ALL LINK created when selected.*
 
+                    These contain default values just incase you forget to include them. If you are using a template for
+                    Facebook Ads and
+                    forget to use a <code>~channel</code> tag in your CSV or Query paramaters we have templates that
+                    will append this for you.
+
+                    IMPORTANT: All values that are in CSV's or query paramaters take will overwrite the values in the
+                    templates.
+                </div>
+            </section>
+            <br><br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="advanced-templates">Overwriting Templates in CSV's</h4>
+
+                    A Template can be overwritten. To do this please define a <code>template_name</code>. The values can
+                    be:
+
+                    Any of the Template Names as a reminder here they are again:
+                    <table class="table table-striped">
+                        <code>
+
+                            <thead>
+                            <tr>
+                                <th>template_name (for use in csv)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if templates %}
+                                {% for template in templates %}
+                                    <tr>
+                                        <td>{{ template.search_name }}</td>
+                                    </tr>
+                                {% endfor %}
+
+                            {% endif %}
+                        </code>
+                    </table>
+
+                    If you define <code>template_name</code> in your CSV and don't append a value to the column whatever
+                    template you selected
+                    from the upload screen will apply to that link. If you want to override a specific link you can use
+                    any of the values listed above.
+
+                    Another use of this feature is manually defining each link in your csv. This is possible by making
+                    sure every line of the csv
+                    has a properly filled out <code>template_name</code> column.
+                </div>
+            </section>
 
         </div>
-
-
     </div>
-        </div>
+    <br>
+    <br>
 
 
 
