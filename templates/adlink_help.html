@@ -35,7 +35,7 @@
                     <h4 id="bulk-link-creation">Bulk link creation (using a CSV)</h4>
                     <p>
                         First and foremost <code>base_url</code> must be defined either in the query parameters or in
-                        the
+                        the. <code>$3p</code> is another parameter that MUST be in an adlink and <strong>Cannot be null</strong>
                         CSV
 
                         Formatting the CSV:
@@ -50,6 +50,7 @@
                             <td>~campaign</td>
                             <td>key1</td>
                             <td>key2</td>
+                            <td>$3p</td>
                         </tr>
 
                         </thead>
@@ -59,6 +60,7 @@
                             <td>Facebook</td>
                             <td>value1</td>
                             <td>value2</td>
+                            <td>Facebook</td>
                         </tr>
 
                         </tbody>
@@ -69,7 +71,7 @@
                     </p>
                     <p>
                         <samp>Output:
-                            <code>https://company.app.link/3p?%7Ecampaign=Facebook&key1=value1&key2=value2</code>
+                            <code>https://company.app.link/3p?%7Ecampaign=Facebook&key1=value1&key2=value2&%243p=Facebook</code>
                         </samp>
                     </p>
                     <p>
