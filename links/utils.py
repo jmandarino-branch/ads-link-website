@@ -73,6 +73,11 @@ def process_csv(request, file, template_id, query_params, to_file=False):
 
             updated_row = merge_dictionaries(query_params, row)
             link_data = merge_dictionaries(updated_row, template)
+
+            if base_url is None:
+                return [('ERROR: on line {}, Please include base_url in the CSV or in the Query Parameters'
+                         .format(csv_reader.line_num),)],  None
+
             url = row_base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
 
             if not (CONSTANT_3P_UPPER in link_data or CONSTANT_3p_LOWER in link_data):
