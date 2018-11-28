@@ -12,9 +12,20 @@ from links.models import Template
 
 BASE_URL_COL_NAME = 'base_url'
 TEMPLATE_COL_NAME = 'template_name'
+CONSTANT_3P_UPPER = '$3P'
+CONSTANT_3p_LOWER = '$3p'
 
 
 def process_csv(request, file, template_id, query_params, to_file=False):
+    """
+
+    :param request: (Django WSGI Request) The Request from the web
+    :param file: (string) The name of the file to open (saved in tmp/ folder)
+    :param template_id: (string) the numeric representation of a template's Id
+    :param query_params: (Dict (str)) keys and values found in the Query params
+    :param to_file: (Bool) a flag that if true indicates the system will force a file download on the webpage
+    :return: ( List( Tuple( str URL, str URI),) str) ex. [ ('hello', 'world'),], output.txt
+    """
     # declare variables the c way!
     urls = []
     if template_id:
@@ -64,6 +75,9 @@ def process_csv(request, file, template_id, query_params, to_file=False):
             link_data = merge_dictionaries(updated_row, template)
             url = row_base_url + parse.urlencode(link_data, safe='{}')  # safe characters do not get encoded
 
+            if not (CONSTANT_3P_UPPER in link_data or CONSTANT_3p_LOWER in link_data):
+                return [('ERROR: on line {}, Please include $3p in your keys'.format(csv_reader.line_num),)],  None
+
             data = (url, row_base_url+link_data_uri(link_data))
             if to_file:
                 outfile.write('{},{},\n'.format(data[0],data[1]))
@@ -78,7 +92,7 @@ def process_csv(request, file, template_id, query_params, to_file=False):
 def process_kv_only(pairs, template_id, request):
     base_url = pairs.get(BASE_URL_COL_NAME, None)
     if base_url is None:
-        return 'ERROR: Please include base_url in your keys'
+        return 'ERROR:', 'Please include base_url in your keys'
     del pairs[BASE_URL_COL_NAME]
 
     template = None
@@ -87,7 +101,10 @@ def process_kv_only(pairs, template_id, request):
 
     link_data = merge_dictionaries(pairs, template)
 
-    return (base_url + parse.urlencode(link_data, safe='{}'),base_url+link_data_uri(link_data))
+    if not(CONSTANT_3P_UPPER in link_data or CONSTANT_3p_LOWER in link_data):
+        return 'ERROR:', 'Please include $3p in your keys'
+
+    return base_url + parse.urlencode(link_data, safe='{}'),base_url+link_data_uri(link_data)
 
 
 def merge_dictionaries(row_data, default):
