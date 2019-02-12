@@ -25,7 +25,7 @@ from django.urls import reverse_lazy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('adlinks/', include('links.urls'), name='links'),
+    path('links/', include('links.urls'), name='links'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name="login"),
     path('', RedirectView.as_view(url=reverse_lazy('adlinks')), name='go-to-links')

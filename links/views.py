@@ -79,6 +79,11 @@ def adlinks(request):
 
 
 @login_required(login_url=constants.LOGIN_URL)
+def email_links(request):
+    return render(request, 'email_links.html', {
+        'user':request.user,
+        'templates': Template.objects.filter(company=request.user.company)
+    })
 
 @login_required(login_url=constants.LOGIN_URL)
 def help_page(request):
