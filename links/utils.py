@@ -100,13 +100,14 @@ def process_kv_only(pairs, template_id, request):
         return 'ERROR:', 'Please include base_url in your keys'
     del pairs[BASE_URL_COL_NAME]
 
+    base_url = base_url.lower()
     template = None
     if template_id:
         template = Template.objects.get(id=int(template_id), company=request.user.company).template_data
 
     link_data = merge_dictionaries(pairs, template)
 
-    if not(CONSTANT_3P_UPPER in link_data or CONSTANT_3p_LOWER in link_data):
+    if not(CONSTANT_3P_UPPER in link_data or CONSTANT_3p_LOWER in link_data) and base_url.endswith('3p?'):
         return 'ERROR:', 'Please include $3p in your keys'
 
     return base_url + parse.urlencode(link_data, safe='{}'),base_url+link_data_uri(link_data)

@@ -25,6 +25,10 @@ HTML_VALUE = 'value_'
 def adlinks(request):
     link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
     ad_templates = request.user.company.templates.all()
+    ad_link_base_url = request.user.company.linkdefault.ad_base_url
+
+    if ad_link_base_url:
+        link_dict['base_url'] = ad_link_base_url
 
     if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
