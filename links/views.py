@@ -8,10 +8,10 @@ from django.shortcuts import render
 from django.http import StreamingHttpResponse
 from wsgiref.util import FileWrapper
 
-from branchlinks.link_templates import TEMPLATE_DICT
 
+from branchlinks import constants
 from .models import Link, LinkDefault
-from .utils import merge_dictionaries, process_csv, process_kv_only
+from .utils import process_csv, process_kv_only
 
 from links.models import Template
 
@@ -21,7 +21,7 @@ HTML_KEY = 'key_'
 HTML_VALUE = 'value_'
 
 
-@login_required(login_url='/login/')
+@login_required(login_url=constants.LOGIN_URL)
 def adlinks(request):
     link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
     ad_templates = request.user.company.templates.all()
@@ -78,7 +78,9 @@ def adlinks(request):
     })
 
 
-@login_required(login_url='/login/')
+@login_required(login_url=constants.LOGIN_URL)
+
+@login_required(login_url=constants.LOGIN_URL)
 def help_page(request):
     return render(request, 'adlink_help.html', {
         'user': request.user,
