@@ -113,6 +113,20 @@ def process_kv_only(pairs, template_id, request):
     return base_url + parse.urlencode(link_data, safe='{}'),base_url+link_data_uri(link_data)
 
 
+def process_email_link(request, original_url, link_data_dict, pairs):
+    base_url = request.user.company.linkdefault.email_base_url
+    if not base_url:
+        return 'ERROR:', 'email_base_url please contact Branch'
+
+    # create link data
+    link_data = link_data_dict.copy()
+    link_data['$Original_url'] = original_url
+    link_data['$Canonical_url'] = original_url
+
+    link_data = merge_dictionaries(pairs, link_data)
+
+    return base_url + parse.urlencode(link_data, safe='{}')
+
 def merge_dictionaries(row_data, default):
     """Merge d2 into d1, where d1 has priority
 

@@ -1,3 +1,4 @@
+import json
 import os
 import mimetypes
 from urllib import parse
@@ -11,7 +12,7 @@ from wsgiref.util import FileWrapper
 
 from branchlinks import constants
 from .models import Link, LinkDefault
-from .utils import process_csv, process_kv_only
+from .utils import process_csv, process_kv_only, process_email_link
 
 from links.models import Template
 
@@ -26,6 +27,10 @@ def adlinks(request):
     link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
     ad_templates = request.user.company.templates.all()
     ad_link_base_url = request.user.company.linkdefault.ad_base_url
+
+    # empty dictionaries '{}' are treated as strings
+    if isinstance(link_dict, str):
+        link_dict = dict()
 
     if ad_link_base_url:
         link_dict['base_url'] = ad_link_base_url
@@ -84,14 +89,31 @@ def adlinks(request):
 
 @login_required(login_url=constants.LOGIN_URL)
 def email_links(request):
+
+    link_dict = request.user.company.linkdefault.email_link_dict
+
+    # empty dictionaries '{}' are treated as strings
+    if isinstance(link_dict, str):
+        link_dict = dict()
+
+    response_dict = {
+        'user': request.user,
+        'ORIGINAL_URL': constants.ORIGINAL_URL,
+        'link_dict_items': link_dict.items(),
+    }
     if request.method == 'POST':
         original_url = request.POST[constants.ORIGINAL_URL]
+        # TODO: get KV pairs from page
+        post_dict = request.POST.dict()
+        pairs = get_key_value_pairs_from_html(post_dict)
 
-    return render(request, 'email_links.html', {
-        'user':request.user,
-        'templates': Template.objects.filter(company=request.user.company),
-        'ORIGINAL_URL': constants.ORIGINAL_URL
-    })
+        final_url = process_email_link(request, original_url, link_dict, pairs)
+
+        # ad final_url to response
+        response_dict['urls'] = [final_url]
+
+    return render(request, 'email_links.html', response_dict)
+
 
 @login_required(login_url=constants.LOGIN_URL)
 def help_page(request):

@@ -6,7 +6,7 @@
 
 
     <!-- this is the form -->
-    <div class="d-flex justify-content-center align-items-center container ">
+    <div class="justify-content-center align-items-center container col-lg-6 offset-lg-3">
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -25,7 +25,7 @@
             <h5>Query Parameters</h5>
 
                 {% for k,v in link_dict_items %}
-                    <div class="form-inline mb-1">
+                    <div class="form-inline mb-3">
                         <input class="form-control" name="key_{{ k }}" type="text" value="{{ k }}">:<input
                             class="form-control" name="value_{{ k }}" type="text" value="{{ v }}">
                         <button type="button" onclick="removePair(this)" class="close" aria-label="Close">
@@ -45,7 +45,7 @@
 
 
     </div>
-    {% if uploaded_file_url %}
+    {% if urls %}
 
         <div class="container">
             <div class="row">
@@ -54,15 +54,13 @@
                         <thead>
                         <tr>
                             <th>URL:</th>
-                            <th>URI:</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         {% for url in urls %}
                             <tr>
-                                <td class="word-wrap">{{ url.0 }}</td>
-                                <td class="word-wrap">{{ url.1 }}</td>
+                                <td class="word-wrap">{{ url }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

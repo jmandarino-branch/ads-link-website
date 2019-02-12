@@ -22,11 +22,11 @@ class Link(BaseModel):
 
 
 class LinkDefault(BaseModel):
-    ad_link_dict = JSONField(help_text='make sure "base_url" is included in the json dict')
+    ad_link_dict = JSONField(default=dict, help_text='make sure "base_url" is included in the json dict')
     ad_base_url = models.CharField(null=True, blank=True, max_length=50, help_text=
                                    'this takes precedent over base_url in ad_link_dict')
 
-    email_link_dict = JSONField(help_text='make sure "base_url" is included in the json dict')
+    email_link_dict = JSONField(default=dict, help_text='make sure "base_url" is included in the json dict')
     email_base_url = models.CharField(null=True, blank=True, max_length=50, help_text=
                                       'this takes precedent over base_url in email_link_dict')
 
