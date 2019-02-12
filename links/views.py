@@ -80,9 +80,13 @@ def adlinks(request):
 
 @login_required(login_url=constants.LOGIN_URL)
 def email_links(request):
+    if request.method == 'POST':
+        original_url = request.POST[constants.ORIGINAL_URL]
+
     return render(request, 'email_links.html', {
         'user':request.user,
-        'templates': Template.objects.filter(company=request.user.company)
+        'templates': Template.objects.filter(company=request.user.company),
+        'ORIGINAL_URL': constants.ORIGINAL_URL
     })
 
 @login_required(login_url=constants.LOGIN_URL)
