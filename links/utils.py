@@ -120,8 +120,8 @@ def process_email_link(request, original_url, link_data_dict, pairs):
 
     # create link data
     link_data = link_data_dict.copy()
-    link_data['$Original_url'] = original_url
-    link_data['$Canonical_url'] = original_url
+    link_data['$original_url'] = original_url
+    link_data['$canonical_url'] = original_url
 
     link_data = merge_dictionaries(pairs, link_data)
 
