@@ -127,21 +127,22 @@ def process_email_link(request, original_url, link_data_dict, pairs):
 
     return base_url + parse.urlencode(link_data, safe='{}')
 
-def merge_dictionaries(row_data, default):
-    """Merge d2 into d1, where d1 has priority
+def merge_dictionaries(user_data_dict, default):
+    """Merge user_data_dict into d1, where default has priority
 
-    for all values of d2 merge them into d1. If a value exists in d1 and in d2 keep the value from d1
+    for all values of default merge them into user_data_dict. If a value exists in user_data_dict and in default
+    keep the value from user_data_dict
 
-    :param d1: dictionary of values
-    :param d2: dictionary of values
+    :param user_data_dict: dictionary of values
+    :param user_data_dict: dictionary of values
     :return: dictionary of unified values
     """
     if default is None:
-        return row_data
-    if row_data is None:
+        return user_data_dict
+    if user_data_dict is None:
         return default
 
-    return {**default, **row_data}
+    return {**default, **user_data_dict}
 
 def link_data_uri(link_data):
     """Take Link Data and uri encode it
