@@ -133,7 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-fipyhtles/
 AUTH_USER_MODEL = 'accounts.User'
 
-LOGIN_REDIRECT_URL = '/adlinks'
+LOGIN_REDIRECT_URL = '/links/ads'
 EXEMPT_URLS = '/admin/'
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
