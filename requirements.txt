@@ -1,13 +1,18 @@
-# Django with postgres
-Django==2.1.2
-pytz==2018.5
-psycopg2==2.7.5
-# Django rest framework
-djangorestframework==3.8.2
-markdown==3.0.1
-django-filter==2.0.0
-whitenoise==4.1.1
-gunicorn==19.9.0
+certifi==2019.6.16
+chardet==3.0.4
 dj-database-url==0.5.0
+Django==2.2.5
 django-extensions==2.1.4
+django-filter==2.0.0
+djangorestframework==3.8.2
+dnspython==1.16.0
+gunicorn==19.9.0
+idna==2.8
+Markdown==3.0.1
+psycopg2==2.7.5
+pytz==2018.5
+requests==2.22.0
 six==1.11.0
+sqlparse==0.3.0
+urllib3==1.25.3
+whitenoise==4.1.1

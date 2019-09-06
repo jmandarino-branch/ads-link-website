@@ -12,6 +12,7 @@ from wsgiref.util import FileWrapper
 
 from branchlinks import constants
 from .models import Link, LinkDefault
+from .ctd_service import ctd_service_driver
 from .utils import process_csv, process_kv_only, process_email_link
 
 from links.models import Template
@@ -122,6 +123,36 @@ def help_page(request):
         'templates': Template.objects.filter(company=request.user.company)
 
     })
+
+def email_debugger(request):
+    response_dict = {
+        'ORIGINAL_URL': constants.ORIGINAL_URL,
+    }
+
+    if request.method == 'POST':
+        url = request.POST.get(constants.ORIGINAL_URL, None)
+
+
+        if url and isinstance(url, str) and url != '':
+            result = ctd_service_driver(url)
+            #TODO: handle result == None
+            # TODO: make pretty
+            if result:
+                response_dict = {
+                    'aasa': result.AASA,
+                    'cname': result.cname,
+                    'ssl': result.SSL,
+                    'bundle': result.bundle,
+                    'prefix': result.prefix,
+                    'paths': result.paths,
+                    'ORIGINAL_URL': constants.ORIGINAL_URL,
+                    'ctd_url': result.get_url_text(),
+                    'cname_correct': result.cnamed_correctly(),
+                    'ctd_deeplink' : result.is_valid_path()
+
+                }
+
+    return render(request, 'email_debugger.html', response_dict)
 
 
 def get_key_value_pairs_from_html(dictionary):
