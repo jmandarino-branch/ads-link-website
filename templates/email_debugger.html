@@ -1,7 +1,7 @@
 {% extends "base_html.html" %}
 
 {% block content %}
-    <h1 class="text-center pt-5 pb-3">Email link Debugger</h1>
+    <h1 class="text-center pt-5 pb-3">Branch Email link Debugger</h1>
 
 
 
@@ -12,7 +12,7 @@
             {% csrf_token %}
             <div class="input-group mb-3">
                 <div class="custom-file">
-                    <input name={{ ORIGINAL_URL }} type="text" class="form-control" placeholder="Insert URL from email here" id={{ ORIGINAL_URL }} >
+                    <input name={{ ORIGINAL_URL }} type="text" class="form-control" placeholder="Place your email link here" id={{ ORIGINAL_URL }} >
 
                 </div>
                 <div class="input-group-append">
@@ -21,6 +21,9 @@
             </div>
 
         </form>
+    <p>This page is intended to help you debug the status of your email links. You can either validate a specific Click
+        Tracking Domain or test a click tracked link directly from your email templates!
+    </p>
 
     </div>
 
@@ -46,7 +49,7 @@
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-          {% if ssl %}SSL is set correctly{% else %}no SSL detected on this domain{% endif %}
+          {% if ssl %}SSL is set up correctly{% else %}no SSL detected on this domain{% endif %}
       </div>
     </div>
   </div>
@@ -54,13 +57,15 @@
     <div class="card-header" id="headingTwo">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          {% if cname_correct %}✅ Your Click Tracking Domain is Correctly CNAME'd to Branch {{ cname }} {% else %}❌ Your Click tracking domain is <strong>not</strong> cnamed to branch (The cname is: {{ cname | default_if_none:"no CNAME exists" }}) {% endif %}
+            {% if cname_correct %}✅ Your Click Tracking Domain is Correctly CNAME'd to Branch <code>{{ cname }}</code>
+            {% else %}❌ Your Click tracking domain is <strong>not</strong> cnamed to branch
+                (The cname is: <code>{{ cname | default_if_none:"no CNAME exists" }})</code> {% endif %}
         </button>
       </h5>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body">
-          For most integrations you will need to CNAME to Branch's server (thirdparty.bnc.lt). One notable exception is
+          For most integrations you will need to CNAME your Click Tracking Domain to Branch's server (thirdparty.bnc.lt). One notable exception is
           the <a href="https://docs.branch.io/emails/salesforce-v1/">Sales Force v1</a> Integration.<br><br>
 
           If you are not using Sales Force v1 please contact your Email provider or domain provider and ask for steps to CNAME your domain.
@@ -71,13 +76,13 @@
     <div class="card-header" id="headingThree">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        {% if aasa %}✅ AASA File found!{% else %}❌ No AASA file found{% endif %}
+        {% if aasa %}✅ AASA File found{% else %}❌ No AASA file found{% endif %}
         </button>
       </h5>
     </div>
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
       <div class="card-body">
-          {% if aasa %}<p>Your AASA file should be all set! If you need to double check here is the relevant info</p>
+          {% if aasa %}<p>Your AASA file should be all set! You can double check the technical details below</p>
         <table class="table">
 
           <tbody>
@@ -99,8 +104,8 @@
           {% else %}
 
               <p>
-              {%  if ssl %} No AASA File found! For most integrations Branch will host it <strong>starting 1 hour after</strong> you integrate your click tracking domain
-                  on the branch dashboard! {% else %} No AASA File Found. It looks like SSL is not set up which could be the reason it is not found {% endif %}
+              {%  if ssl %} No AASA File found! For most integrations Branch will host both the AASA and SSL <strong>starting 1 hour after</strong> you integrate your click tracking domain
+                  on the branch dashboard!{% else %} No AASA File Found. It looks like SSL is not set up which could be the reason it was not found {% endif %}
               </p>
               <p> If you are using <a href="https://docs.branch.io/emails/oracle-responsys/#send-your-aasa-file-to-your-esp">Responsys</a> please Contact Oracle to have them host your AASA file</p>
 
@@ -138,7 +143,7 @@
     <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
 
       <div class="card-body">
-          {% if branch_link %}Branch link found! <code>{{ branch_link }}</code>{% else %}No Branch link found currently this feature still needs to be tested!{% endif %}
+          {% if branch_link %}Branch link found! <code>{{ branch_link }}</code>{% else %}No Branch link found --currently this feature still needs to be tested-- Please double check!{% endif %}
 
       </div>
   </div>
