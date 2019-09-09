@@ -38,6 +38,8 @@ class ClickTrackingDomain:
         self.prefix = ''
         self.paths = []
 
+        self.branch_link = None
+
     def get_url_text(self):
         if isinstance(self.url, ParseResult):
             return self.url.geturl()
@@ -124,6 +126,21 @@ def parse_aasa_for_path(ctd):
 
     return ctd.is_valid_path()
 
+def check_for_branch_link(ctd):
+
+    # ALL  URLs should be valid already
+    r = requests.get(ctd.get_url_text(), verify=False)
+
+    url = urlparse(r.url)
+    if 'app.link' in url.netloc:
+        return url.geturl
+
+    if r.history:
+        for x in r.history:
+            url = urlparse(x.url)
+            if 'app.link' in url.netloc:
+                return url.geturl()
+    return None
 
 def ctd_service_driver(url):
 
@@ -155,6 +172,7 @@ def ctd_service_driver(url):
         validate_ssl_aasa(ctd, True)
 
     aasa = parse_aasa_for_path(ctd)
+    ctd.branch_link = check_for_branch_link(ctd)
 
 
     return ctd

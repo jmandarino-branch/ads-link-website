@@ -154,7 +154,8 @@ def email_debugger(request):
                     'ORIGINAL_URL': constants.ORIGINAL_URL,
                     'ctd_url': result.get_url_text(),
                     'cname_correct': result.cnamed_correctly(),
-                    'ctd_deeplink' : result.is_valid_path()
+                    'ctd_deeplink' : result.is_valid_path(),
+                    'branch_link': result.branch_link
 
                 }
 
