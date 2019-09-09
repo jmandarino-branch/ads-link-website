@@ -23,29 +23,127 @@
         </form>
 
     </div>
-    <!--
-'aasa': result.AASA,
-                    'cname': result.cname,
-                    'ssl': result.SSL,
-                    'bundle': result.bundle,
-                    'prefix': result.prefix,
-                    'paths': result.paths,
-                    'ORIGINAL_URL': constants.ORIGINAL_URL,
-                    'ctd_url': result.get_url_text(),
-                    'cname_correct': result.cnamed_correctly()
-                            -->
-{%  if ctd_url %}
 
-    <div>CTD = {{ ctd_url }}</div><br>
-    <div>SSL = {{ ssl }}</div><br>
-    <div>CNAMED correctly = {{ cname_correct }} | the cname is {{ cname | default_if_none:"There is no CNAME" }}</div><br>
-    <div>Bundle id = {{ bundle }}</div><br>
-    <div>App Prefix = {{ prefix }}</div><br>
-    <div> Will this CTD open the app (based on path) = {{ ctd_deeplink }}</div><br>
-    <div> AASA = {{ aasa }}</div>
+{%  if ctd_url %}
+    <div class="justify-content-center align-items-center container col-lg-6 offset-lg-3">
+<br>
+    <hr>
+    <br>
+    <div class="alert alert-success" role="alert">
+    your click tracking domain is <strong>{{ ctd_url }}</strong>
+</div>
+
+    <br>
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          {% if ssl %}✅ SSL is set up Correctly{% else %}❌ No SSL certificate found{% endif %}
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+          {% if ssl %}SSL is set correctly{% else %}no SSL detected on this domain{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          {% if cname_correct %}✅ Your Click Tracking Domain is Correctly CNAME'd to Branch {{ cname }} {% else %}❌ Your Click tracking domain is <strong>not</strong> cnamed to branch (The cname is: {{ cname | default_if_none:"no CNAME exists" }}) {% endif %}
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+          For most integrations you will need to CNAME to Branch's server (thirdparty.bnc.lt). One notable exception is
+          the <a href="https://docs.branch.io/emails/salesforce-v1/">Sales Force v1</a> Integration.<br><br>
+
+          If you are not using Sales Force v1 please contact your Email provider or domain provider and ask for steps to CNAME your domain.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        {% if aasa %}✅ AASA File found!{% else %}❌ No AASA file found{% endif %}
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+          {% if aasa %}<p>Your AASA file should be all set! If you need to double check here is the relevant info</p>
+        <table class="table">
+
+          <tbody>
+            <tr>
+              <th scope="row">Bundle ID</th>
+              <td>{{bundle}}</td>
+            </tr>
+            <tr>
+              <th scope="row">Apple App Prefix</th>
+              <td>{{prefix}}</td>
+            </tr>
+              <tr>
+              <th scope="row">AASA File</th>
+                  <td><code>{{ aasa }}</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+          {% else %}
+
+              <p>
+              {%  if ssl %} No AASA File found! For most integrations Branch will host it <strong>starting 1 hour after</strong> you integrate your click tracking domain
+                  on the branch dashboard! {% else %} No AASA File Found. It looks like SSL is not set up which could be the reason it is not found {% endif %}
+              </p>
+              <p> If you are using <a href="https://docs.branch.io/emails/oracle-responsys/#send-your-aasa-file-to-your-esp">Responsys</a> please Contact Oracle to have them host your AASA file</p>
+
+        {% endif %}
+
+      </div>
+    </div>
+  <div class="card">
+    <div class="card-header" id="headingFour">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+        {% if ctd_deeplink %}✅ This link will open the app{% else %}❌ This link is a Web only link{% endif %}
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+
+      <div class="card-body">
+          {% if ctd_deeplink %}This Link is set up to open the app! If you are using <code>$web_only=true</code> your links will open the app then go to the
+          web experience{% else %}Based on the AASA file this link is set to open the web.
+          If this link is intended to open the app please check that you are flagging your links correctly in your email template.
+          {% endif %}
+
+      </div>
+  </div>
+</div>
+
+  </div>
+{% else %}
+    <div class="justify-content-center align-items-center container col-lg-6 offset-lg-3">
+<br>
+    <hr>
+    <br>
+<div class="alert alert-danger" role="alert">
+  Error:
+</div>
+</div>
 
 
 
 {% endif %}
+
+
+
 
 {% endblock %}
