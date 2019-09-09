@@ -68,10 +68,16 @@ class ClickTrackingDomain:
         url_path = self.url.path
 
         for path in self.paths:
+            not_flag = False
+            if 'NOT' in path:
+                not_flag = True
+                path = path.replace('NOT', '').strip()
             # escape characters, then replace \* with .* to follow convention
             r = re.compile(re.escape(path).replace('*', '.*'))
             result = r.match(url_path)
             if result:
+                if not_flag:
+                    return False
                 return True
         return False
 
