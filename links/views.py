@@ -12,7 +12,7 @@ from wsgiref.util import FileWrapper
 
 from branchlinks import constants
 from .models import Link, LinkDefault
-from .ctd_service import ctd_service_driver
+from .ctd_service import ctd_service_driver, ClickTrackingParsingError
 from .utils import process_csv, process_kv_only, process_email_link
 
 from links.models import Template
@@ -124,6 +124,7 @@ def help_page(request):
 
     })
 
+
 def email_debugger(request):
     response_dict = {
         'ORIGINAL_URL': constants.ORIGINAL_URL,
@@ -132,9 +133,14 @@ def email_debugger(request):
     if request.method == 'POST':
         url = request.POST.get(constants.ORIGINAL_URL, None)
 
-
         if url and isinstance(url, str) and url != '':
-            result = ctd_service_driver(url)
+            try:
+                result = ctd_service_driver(url)
+            except ClickTrackingParsingError as e:
+                return render(request, 'email_debugger.html', {
+                    'ORIGINAL_URL': constants.ORIGINAL_URL,
+                    'error': e
+                })
             #TODO: handle result == None
             # TODO: make pretty
             if result:
@@ -151,6 +157,7 @@ def email_debugger(request):
                     'ctd_deeplink' : result.is_valid_path()
 
                 }
+
 
     return render(request, 'email_debugger.html', response_dict)
 

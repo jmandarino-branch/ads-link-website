@@ -8,6 +8,10 @@ import dns.resolver
 import requests
 
 
+class ClickTrackingParsingError(Exception):
+    pass
+
+
 class ClickTrackingDomain:
     """An object that represents the data of a Click tracking domain
 
@@ -53,7 +57,6 @@ class ClickTrackingDomain:
         url = self.url._replace(path=self.WELL_KNOWN_AASA_ROUTE, params='', query='', fragment='')
         return url.geturl()
 
-
     def is_valid_path(self):
         if self.url is None:
             return False
@@ -64,9 +67,7 @@ class ClickTrackingDomain:
 
         for path in self.paths:
             # escape characters, then replace \* with .* to follow convention
-            r = re.compile(re.escape(path).replace('\*', '.*'))
-
-            print(path, r)
+            r = re.compile(re.escape(path).replace('*', '.*'))
             result = r.match(url_path)
             if result:
                 return True
@@ -90,11 +91,9 @@ def validate_ssl_aasa(ctd, wellknown=False):
                 ctd.AASA = r.json()
             except json.JSONDecodeError:
                 ctd.AASA = None
-                print("no AASA")
                 return False
 
     except requests.exceptions.SSLError:
-        print("no SSL")
         ctd.SSL = False
         ctd.AASA = None
         return False
@@ -127,7 +126,11 @@ def parse_aasa_for_path(ctd):
 
 
 def ctd_service_driver(url):
-    ctd_url = urlparse(url)
+
+    ctd_url = urlparse(url.strip())
+
+    if not(ctd_url.scheme == 'https' or ctd_url.scheme == 'http'):
+        raise ClickTrackingParsingError('Scheme is not http or https')
 
     ctd = ClickTrackingDomain(ctd_url)
     resolver = dns.resolver.Resolver(configure=False)
@@ -139,10 +142,12 @@ def ctd_service_driver(url):
         ctd.cname = answer.rrset[0].target
         print(ctd.cname)
     except dns.resolver.NoAnswer:
-        print('no answer')
+        # no CNAME
+        ctd.cname = None
+        pass
+
     except dns.resolver.NXDOMAIN:
-        print('this is bad')
-        return None
+        raise ClickTrackingParsingError('Could not reach the domain, Please check for typo\'s')
 
     aasa = validate_ssl_aasa(ctd, False)
 
@@ -151,6 +156,5 @@ def ctd_service_driver(url):
 
     aasa = parse_aasa_for_path(ctd)
 
-    print(aasa)
 
     return ctd
