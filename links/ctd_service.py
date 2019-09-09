@@ -83,6 +83,17 @@ class ClickTrackingDomain:
 
 
 def validate_ssl_aasa(ctd, wellknown=False):
+    """Validates Both SSL and AASA file
+
+    Sets the CTD obj's AASA and SSL
+
+    AASA -- will be a json file
+    SSL -- A boolean true if SSL exist, False if not
+
+    :param ctd: (obj: ClickTrackingDomain) The click tracking domain
+    :param wellknown: A flag to check which path to try (either standard or .well-known)
+    :return: bool True if AASA is found and SSL
+    """
 
     try:
         if wellknown:
@@ -110,6 +121,14 @@ def validate_ssl_aasa(ctd, wellknown=False):
 
 
 def parse_aasa_for_path(ctd):
+    """Parses AASA file for path, bundle id and prefix
+
+    Sets the prefix, path and bundle id of the CTD object.
+    returns true if the paths in the AASA file match the path in the CTD
+
+    :param ctd: (obj: ClickTrackingDomain) The click tracking domain
+    :return: bool, False if we can't parse the AASA file, True if the URL of the CTD is a valid path to open the app
+    """
     # check path
     if not ctd.AASA:
         return False
@@ -130,11 +149,20 @@ def parse_aasa_for_path(ctd):
             if paths:
                 ctd.paths = paths
 
-    return ctd.is_valid_path()
+    return ctd.is_valid_path() # this seems like pretty poor practice... not sure how to better design this
+
 
 def check_for_branch_link(ctd):
+    """Check redirects of the CTD url for a branch link
 
-    # ALL  URLs should be valid already
+    Follows the redirects of the click tracking domain using the requests lib. attempts to find a .app.link domain and
+    return it
+
+    :param ctd: (obj: ClickTrackingDomain) The click tracking domain
+    :return: (str) the branch URL else returns None
+    """
+
+    # ALL URLs should be valid already
     r = requests.get(ctd.get_url_text(), verify=False)
 
     url = urlparse(r.url)
@@ -147,6 +175,7 @@ def check_for_branch_link(ctd):
             if 'app.link' in url.netloc:
                 return url.geturl()
     return None
+
 
 def ctd_service_driver(url):
 
