@@ -167,7 +167,7 @@ def check_for_branch_link(ctd):
 
     url = urlparse(r.url)
     if 'app.link' in url.netloc:
-        return url.geturl
+        return url.geturl()
 
     if r.history:
         for x in r.history:
