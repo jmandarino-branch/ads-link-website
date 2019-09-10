@@ -116,6 +116,10 @@ def validate_ssl_aasa(ctd, wellknown=False):
         ctd.SSL = False
         ctd.AASA = None
         return False
+    except requests.exceptions.ConnectionError:
+        ctd.SSL = False
+        ctd.AASA = None
+        return False
 
     return True
 
@@ -161,6 +165,11 @@ def check_for_branch_link(ctd):
     :param ctd: (obj: ClickTrackingDomain) The click tracking domain
     :return: (str) the branch URL else returns None
     """
+
+    # add check for SSL and AASA for domains that are erroring
+    if not ctd.SSL or ctd.AASA is None:
+        return None
+    print(ctd.SSL, ctd.AASA)
 
     # ALL URLs should be valid already
     r = requests.get(ctd.get_url_text(), verify=False)
