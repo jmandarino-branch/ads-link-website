@@ -160,19 +160,20 @@ def check_for_branch_link(ctd):
     """Check redirects of the CTD url for a branch link
 
     Follows the redirects of the click tracking domain using the requests lib. attempts to find a .app.link domain and
-    return it
+    return it. This will also validate links that are generically wrapped even if they are not properly integrated with
+    branch
 
     :param ctd: (obj: ClickTrackingDomain) The click tracking domain
     :return: (str) the branch URL else returns None
     """
 
-    # add check for SSL and AASA for domains that are erroring
-    if not ctd.SSL or ctd.AASA is None:
-        return None
-    print(ctd.SSL, ctd.AASA)
+    # URLs can fail above checks but still be valid here because they have a branch link
 
-    # ALL URLs should be valid already
-    r = requests.get(ctd.get_url_text(), verify=False)
+    try:
+        r = requests.get(ctd.get_url_text(), verify=False)
+    except:
+        # not great practice but any failure is a reason to quit
+        return None
 
     url = urlparse(r.url)
     if 'app.link' in url.netloc:
@@ -220,3 +221,13 @@ def ctd_service_driver(url):
 
 
     return ctd
+
+
+"""
+Test links:
+http://l.marketing01.email-allstate.com/rts/go2.aspx?h=450583&tp=i-H43-A2-NQq-1HzQUs-25-eZ7el-3E-1HzQUq-1999E9&x=049608%7cP_CUSTMKTG_STFS_ONLINERESEARCHSERVICES_P%7c20190905%7c
+https://ablink.mail.grailed.com/
+https://woof.chewy.com
+web only: https://dl.zola.com/external/5cbf7190071eff4e251abe7a/aHR0cHM6Ly93d3cuem9sYS5jb20vd2VkZGluZy1wbGFubmluZy9wYXBlcj91dG1fbWVkaXVtPWVtYWlsJnV0bV9zb3VyY2U9dHJpZ2dlcmVkJnV0bV9jYW1wYWlnbj11bmlmaWVkd2VsY29tZV9wYXBlciZieGlkPTVjMWE5YzMxY2RiN2VjNmMzNDE0NTk1YSYkd2ViX29ubHk9dHJ1ZSZub2FwcD10cnVl/5c1a9c31cdb7ec6c3414595aD44fd2904
+deeplink with Path validation: https://ablink.mail.grailed.com/uni/wf/click?upn=tT6YHeYyNeCFDKc-2Bw-2B9Pz9zV14sAf9fdqUwJf7oPQJbnBQPsW41VsUhcT3xbinNEyiVsQdJpm8dCc1Nk5cFU6ncB80zMMfXkZtroRDIc70A-3D_1C8fdgrh-2Fw7P0-2F2Ol3PSBqFV5Bid60CsJ2gOrSVYfMzoVcV5oNKNwu3KpjB9JL1ttr0HdAfd7jmxveNMBflj2xyMQOTuLfIewRKmfDau0y4BsCwwHn-2FnbjqKKLgfXcxLUeSTjlso5ABMq-2F8VR-2Fl8MggMBhP0GU1ZZutvuDlz5Q41CQVXlwqCC-2BpjRkl6N35DQiNQwrnSxLLDzdHTQmJ5gdM7aEabFtjpUHCiEVgK2sAeCCW1j62BPg1e8Zz8seeFp7oCw4pvQRN-2B7yh1PAp-2BA4DXosk-2BShz2eGbFUGGyrOcr6wFJqah07NNOA56T1aeXS9uTo7W8neJ8kHAk3fX-2FSDFxXxSJx5-2BsX8-2FOCntrBvYz6giOWS4TJ6-2FrqWZExrOmm8Gb18Bo0fkmOXoSPiYssB3M8evajEPVPfKjf4KsZDxozRPfZXcLlug9i7svPD12QsHVWZx1l-2F8uhy8qFvYXhei9Yvq1z77vpT7PbTQljB5gHzdZybe7ZxSJfVCgiWwg
+"""
