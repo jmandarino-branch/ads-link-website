@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import adlinks, help_page, email_links, email_debugger, product_feeds
+from .views import adlinks, help_page, email_links, email_debugger, product_feeds, product_feeds_help
 
 
 urlpatterns = [
@@ -7,6 +7,7 @@ urlpatterns = [
     path('ads/help', help_page, name='adlinks_help'),
     path('emails', email_links, name='email_links'),
     path('email-debugger', email_debugger, name='email_debugger'),
-    path('product-feeds', product_feeds, name='product_feeds')
+    path('product-feeds', product_feeds, name='product_feeds'),
+    path('product-feeds/help', product_feeds_help, name='product_feeds_help'),
 
 ]

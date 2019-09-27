@@ -1,0 +1,93 @@
+{% extends "base_html.html" %}
+
+{% block content %}
+
+    <h1 class="text-center pt-5 pb-3">{{ user.company }}'s Product Feed Creator Help Page</h1>
+        <h6 class="text-center pb-3"><a href="{% url 'product_feeds' %}">Create Links</a></h6>
+
+
+    <!-- this is where the content will live -->
+    <div class="align-items-center container">
+
+
+        <div class="row">
+
+            <div class="row">
+                <div class="col">
+
+
+                    <h3>How to use</h3>
+
+
+                    <ol>
+                        <li><a href="#general">Product Feed creation</a></li>
+                        <li><a href="#templates">Templates</a></li>
+                    </ol>
+                </div>
+            </div>
+            <br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="general">Product Feed creation (using a CSV or TSV)</h4>
+                    <p>
+
+                        Use this product to upload a product feed and select the column you'd like to replace with a branch link.
+                        The column name is <strong>case sensitive</strong>.
+
+                        <br><br>You will be able to add Query parameter which will apply to <strong>All urls</strong>. In
+                        addition you can use our templates which will add all the necessary params for that ad link and partner
+
+                    </p>
+                        <samp>Output:
+                            <code>{{ adlink_url }}%24fallback_url%3Dhttps%3A%2F%2Fyourcompany.com%26%24canonical_url%3Dhttps%3A%2F%2Fyourcompany.com</code>
+                        </samp>
+                    </p>
+                    <p>
+                        When your Product feed is finished, a new file will download after the links have been created
+                    </p>
+
+                </div>
+            </section>
+            <br><br>
+            <section class="row">
+                <div class="col">
+                    <h4 id="templates">How To Use Templates/Ad Types</h4>
+
+                    <p>Your Account ({{ user }}) has been given access to the following templates:</p>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Template</th>
+                            <th>template_name (for use in csv)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if templates %}
+                            {% for template in templates %}
+                                <tr>
+                                    <td>{{ template }}</td>
+                                    <td>{{ template.search_name }}</td>
+
+                                </tr>
+                            {% endfor %}
+
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+
+                    These are easy defaults that you can append to your links to make sure you are in compliance with the ad network's standards.
+                    ALL LINK created when selected will have these query params.
+
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <br>
+    <br>
+
+
+
+{% endblock %}

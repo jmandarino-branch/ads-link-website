@@ -125,6 +125,15 @@ def help_page(request):
     })
 
 @login_required(login_url=constants.LOGIN_URL)
+def product_feeds_help(request):
+    return render(request, 'product_feeds_help.html', {
+        'user': request.user,
+        'templates': Template.objects.filter(company=request.user.company),
+        'adlink_url': LinkDefault.objects.get(company=request.user.company).ad_base_url
+
+    })
+
+@login_required(login_url=constants.LOGIN_URL)
 def product_feeds(request):
     link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
     ad_templates = request.user.company.templates.all()

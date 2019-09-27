@@ -186,7 +186,7 @@ def create_deeplink_feeds(request, filename, template_id, col_name, pairs):
             query_params['$fallback_url'] = row[col_name]  # keep original url as fallback
             query_params['$canonical_url'] = row[col_name]  # add $canonical_url for linking
 
-            url = base_url + parse.urlencode(query_params, safe='{}:')  # safe characters do not get encoded
+            url = base_url + parse.urlencode(query_params, safe='{}')  # safe characters do not get encoded
 
             row[col_name] = url
             write_csv(output_filename, row.values(), 'a')  # write rows to output
