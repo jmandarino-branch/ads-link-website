@@ -13,7 +13,7 @@ from wsgiref.util import FileWrapper
 from branchlinks import constants
 from .models import Link, LinkDefault
 from .ctd_service import ctd_service_driver, ClickTrackingParsingError
-from .utils import process_csv, process_kv_only, process_email_link
+from .utils import  create_deeplink_feeds, process_csv, process_kv_only, process_email_link
 
 from links.models import Template
 
@@ -123,6 +123,48 @@ def help_page(request):
         'templates': Template.objects.filter(company=request.user.company)
 
     })
+
+@login_required(login_url=constants.LOGIN_URL)
+def product_feeds(request):
+    link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
+    ad_templates = request.user.company.templates.all()
+
+    response_dict = {
+        'user': request.user,
+        'ad_templates': ad_templates,
+        'link_dict_items': link_dict.items()
+    }
+
+    if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
+        file = request.FILES['uploaded_file']
+
+        # handle extra inputs
+        post_dict = request.POST.dict()
+        pairs = get_key_value_pairs_from_html(post_dict)
+
+        col_name = request.POST.get('replacement', None)
+
+        if not col_name:
+            response_dict['error'] = 'No Column Name Entered'
+
+            return render(request, 'product_feeds.html', response_dict)
+
+        template_id = request.POST.get('template_name', None)  # check if a template is to be used
+        if file.name.endswith('.csv') or file.name.endswith('.tsv'):
+            try:
+                path = default_storage.save(os.path.join('tmp', file.name),
+                                            ContentFile(file.read()))  # store a file temporarily
+
+                outfile = create_deeplink_feeds(request, path, template_id, col_name, pairs)
+                response = download_file(outfile)
+                return response
+            except KeyError as e:
+                response_dict['error'] = e
+
+        else:
+            response_dict['error'] = 'Please use a File of type .csv or .tsv'
+
+    return render(request, 'product_feeds.html', response_dict)
 
 
 def email_debugger(request):

@@ -155,3 +155,46 @@ def link_data_uri(link_data):
 
     # uri encode
     return parse.quote(b64_encoded)
+
+
+def create_deeplink_feeds(request, filename, template_id, col_name, pairs):
+    output_filename = os.path.join(BASE_DIR, 'tmp', '{}{}{}'.format(request.user.company.name.replace(' ', '-'),
+                                                                    datetime.now().strftime("%Y-%m-%d"), '.csv'))
+    template_global = {}
+
+    base_url = request.user.company.linkdefault.ad_base_url
+
+    if template_id:
+        template_global = Template.objects.get(id=int(template_id), company=request.user.company).template_data
+
+    query_params = merge_dictionaries(pairs, template_global)
+
+    with open(filename) as csv_file:
+        dialect = csv.Sniffer().sniff(csv_file.read(1024))
+        csv_file.seek(0)
+        csv_reader = csv.DictReader(csv_file, dialect=dialect)
+
+        write_csv(output_filename, {str(x): str(x) for x in csv_reader.fieldnames}, 'w')  # write header
+
+        for row in csv_reader:
+            # apply template data to the url
+
+            if col_name not in row:
+                raise KeyError("Could not find column name: {}, please check capitalization".format(col_name))
+
+            query_params['$original_url'] = row[col_name]  # keep the original url
+            query_params['$fallback_url'] = row[col_name]  # keep original url as fallback
+            query_params['$canonical_url'] = row[col_name]  # add $canonical_url for linking
+
+            url = base_url + parse.urlencode(query_params, safe='{}:')  # safe characters do not get encoded
+
+            row[col_name] = url
+            write_csv(output_filename, row.values(), 'a')  # write rows to output
+
+    return output_filename
+
+
+def write_csv(filename, row, mode):
+    with open(filename, mode=mode) as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow(row)

@@ -24,11 +24,13 @@ class Link(BaseModel):
 class LinkDefault(BaseModel):
     ad_link_dict = JSONField(default=dict, help_text='make sure "base_url" is included in the json dict')
     ad_base_url = models.CharField(null=True, blank=True, max_length=50, help_text=
-                                   'this takes precedent over base_url in ad_link_dict')
+                                   'this takes precedent over base_url in ad_link_dict. Please include https:// and up to '
+                                   'the first ?')
 
     email_link_dict = JSONField(default=dict, help_text='make sure "base_url" is included in the json dict')
     email_base_url = models.CharField(null=True, blank=True, max_length=50, help_text=
-                                      'this takes precedent over base_url in email_link_dict')
+                                      'this takes precedent over base_url in email_link_dict Please include https://'
+                                      'and up to the first ?')
 
 
     company = models.OneToOneField('accounts.Company', on_delete=models.CASCADE, null=True)

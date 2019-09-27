@@ -1,18 +1,26 @@
 {% extends "base_html.html" %}
 
 {% block content %}
-    <h1 class="text-center pt-5 pb-3">{{ user.company }}'s CSV link Creator</h1>
+
+        <h1 class="text-center pt-5 pb-3">{{ user.company }}'s Product Feed link Creator</h1>
     <h6 class="text-center pb-3"><a href="{% url 'adlinks_help' %}">Help Page</a></h6>
 
 
     <!-- this is the form -->
     <div class="d-flex justify-content-center align-items-center container ">
 
+    {% if error %}
+    <div class="justify-content-center align-items-center container col-lg-6 offset-lg-3">
+        <div class="alert alert-danger" role="alert">
+          Error: {{ error }}
+        </div>
+    {% endif %}
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="input-group mb-3">
                 <div class="custom-file">
-                    <input name="uploaded_file" type="file" class="custom-file-input" id="inputGroupFile02">
+                    <input name="uploaded_file" type="file" class="custom-file-input overflow-hidden" id="inputGroupFile02">
                     <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
 
                 </div>
@@ -24,7 +32,7 @@
                 <div class="row">
                     <div class="col">
                         <!-- select with values from ad_templates -->
-                        <select name="template_name" class="custom-select">
+                        <select name="template_name" class="custom-select" id="template_name">
                             <option selected="selected" disabled>Select Template</option>
                             <option value="">None</option>
 
@@ -33,20 +41,21 @@
                             {% endfor %}
 
                         </select>
+                    <label for="template_name">Ad Type</label>
                     </div>
+
                     <div class="col">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="fileExport" id="fileExport"
-                                   value="True">
-                            <label class="form-check-label" for="fileExport">Download Links as file</label>
-                        </div>
+
+                        <input name="replacement" id="replacement" class="form-control" type="text" placeholder="Column to replace">
+                        <label for="replacement">Column to replace with Branch</label>
+
                     </div>
                 </div>
             </div>
 
             <div id="kvpairs" class="form-group">
                 <!-- Key value pairs. the name of the items are based of what the key is -->
-            <h5>Query Parameters</h5>
+            <h5>Additional Query Parameters to add to every link</h5>
 
                 {% for k,v in link_dict_items %}
                     <div class="form-inline mb-1">
@@ -66,36 +75,7 @@
 
 
         </form>
-
-
     </div>
-    {% if uploaded_file_url %}
-
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>URL:</th>
-                            <th>URI:</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        {% for url in urls %}
-                            <tr>
-                                <td class="word-wrap">{{ url.0 }}</td>
-                                <td class="word-wrap">{{ url.1 }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
 
 <script>
 
@@ -173,5 +153,4 @@
         table-layout: fixed;
     }
 </style>
-
 {% endblock %}
