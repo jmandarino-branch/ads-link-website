@@ -138,10 +138,12 @@ def product_feeds(request):
     link_dict = request.user.company.linkdefault.ad_link_dict  # fetch link defaults from DB
     ad_templates = request.user.company.templates.all()
 
+    print(link_dict, type(link_dict))
+
     response_dict = {
         'user': request.user,
         'ad_templates': ad_templates,
-        'link_dict_items': link_dict.items()
+        'link_dict_items': link_dict.items() if isinstance(link_dict, dict) else {}
     }
 
     if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
