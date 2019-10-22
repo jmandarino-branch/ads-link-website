@@ -1,0 +1,160 @@
+{% extends "base_html.html" %}
+
+{% block content %}
+
+    <h1 class="text-center pt-5 pb-3">Link Updater</h1>
+    <!--<h6 class="text-center pb-3"><a href="{% url 'product_feeds_help' %}">Help Page</a></h6>-->
+
+
+    <!-- this is the form -->
+    <div class="d-flex justify-content-center align-items-center container ">
+
+
+
+        <form method="post" enctype="multipart/form-data">
+            {% if error %}
+    <div class="">
+        <div class="alert alert-danger" role="alert">
+          Error: {{ error }}
+        </div>
+    {% endif %}
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input name="uploaded_file" type="file" class="custom-file-input overflow-hidden" id="inputGroupFile02">
+                    <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+
+                </div>
+                <div class="input-group-append">
+                    <button type="submit" class="input-group-text btn-primary" id="">Build Links</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h5>Branch App Keys</h5>
+                <div class="alert alert-primary" role="alert">
+                    Find This information <a href="https://dashboard.branch.io/account-settings/profile" target="_blank">Here</a>
+                </div>
+                <div class="row">
+                    <div class="col">
+                    <input class="form-control {% if branch_key_error %}is-invalid{% endif %}" name="branch_key" id="branch_key" value="{{ branch_key }}" placeholder="Branch App Key">
+                        </div>
+                    <div class="col">
+                    <input class="form-control {% if branch_key_error %}is-invalid{% endif %}" name="branch_secret" id="branch_secret" value="{{ branch_secret }}" placeholder="Branch App Secret Key">
+                        </div>
+                </div>
+            </div>
+
+            <div id="kvpairs" class="form-group">
+                <!-- Key value pairs. the name of the items are based of what the key is -->
+            <h5>Keys to updated</h5>
+
+                    <div class="form-inline mb-1">
+                        <input class="form-control" name="key_current" type="text" value="{{ k }}" placeholder="Current Key Name">
+                         ->
+                        <input
+                            class="form-control" name="new_key_current" type="text" value="{{ v }}" placeholder="New Key Name">
+                        :
+                        <input
+                            class="form-control" name="value_current" type="text" value="{{ v }}" placeholder="(optional) new value">
+                        <button type="button" onclick="removePair(this)" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <button id="adKVButton" type="button" class="btn btn-secondary mt-1" onclick="addPair()">Add Key
+                </button>
+
+            </div>
+
+
+        </form>
+    </div>
+    </div>
+
+    <script>
+
+    function removePair(context) {
+        //remove elements parent. for use with buttons
+        context.parentElement.remove()
+    }
+
+    function addPair() {
+        // get container of kv list
+        container = document.getElementById("kvpairs");
+        var input = document.createElement("input");
+        // random name for kv pair as hex string
+        var name = (Math.random() * 0xFFFFFF << 0).toString(16);
+
+        // create button
+        var button = document.getElementById("adKVButton");
+
+        // set variables for create elements
+        input.type = "text";
+        input.className = "key form-control";
+        input.name = "key_" + name; //names the input field for the key based on hex string
+        input.placeholder = "Current Key Name";
+        var input2 = document.createElement("input");
+        input2.type = "text";
+        input2.className = "value form-control";
+        input2.name = "new_key_" + name;
+        input2.placeholder = "New Key Name";
+
+        var input3 = document.createElement("input");
+        input3.type = "text";
+        input3.className = "value form-control";
+        input3.name = "value_" + name;
+        input3.placeholder = "(optional) new value";
+
+        // each K-V pair has a remove button
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.setAttribute('onClick', 'removePair(this)');
+        removeButton.className = "close";
+        removeButton.setAttribute("aria-label", "Close");
+        //lazy way to do it
+        removeButton.innerHTML = '<span aria-hidden=\"true\">&times;</span>';
+        // wrap components in a form-inline dive to make the elements inline
+        var div = document.createElement("div");
+
+        div.className = "form-inline mb-1";
+
+
+        div.appendChild(input);
+        div.appendChild(document.createTextNode(" -> "));
+        div.appendChild(input2);
+        div.appendChild(document.createTextNode(" : "));
+        div.appendChild(input3);
+        div.appendChild(removeButton);
+
+        container.insertBefore(div, button)
+
+    }
+
+    // bootstrap 4.1 requires jquery to have a custom file name in input field
+    $('.custom-file-input').on('change', function () {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+
+</script>
+
+<style>
+    button.close {
+        padding-left: 5px;
+    }
+
+    .word-wrap {
+        word-break: break-all;
+    / / word-wrap: break-word;
+    / / overflow-wrap: break-word;
+    }
+
+    .no-wrap {
+        white-space: nowrap;
+    }
+
+    .fixed {
+        table-layout: fixed;
+    }
+</style>
+{% endblock %}

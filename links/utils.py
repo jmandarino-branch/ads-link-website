@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 from urllib import parse
 
+import requests
+
 from branchlinks.link_templates import TEMPLATE_DICT
 from branchlinks.settings import BASE_DIR
 
@@ -198,3 +200,69 @@ def write_csv(filename, row, mode):
     with open(filename, mode=mode) as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(row)
+
+
+def update_links(filename, branch_key, branch_secret, updated_keys):
+    branch_endpoint = 'https://api.branch.io/v1/url?url='
+
+    with open(filename) as csv_file:
+        dialect = csv.Sniffer().sniff(csv_file.read(1024))
+        csv_file.seek(0)
+        csv_reader = csv.reader(csv_file, dialect=dialect)
+
+        for row in csv_reader:
+            url = parse.quote_plus(row[0])
+            link_read_url = '{}{}{}{}'.format(branch_endpoint, url, "&branch_key=", branch_key)
+            response = requests.get(link_read_url)
+            if response.status_code != 200:
+                raise Exception('Could not read url: {}'.format(url))
+            link_dictionary = json.loads(response.text)
+
+            link_dictionary['branch_key'] = branch_key
+            link_dictionary['branch_secret'] = branch_secret
+
+            # dictionary clean up
+            for x in ['type', 'url', 'alias']:
+                if x in link_dictionary:
+                    del link_dictionary[x]
+
+                if 'data' in link_dictionary:
+                    if x in link_dictionary['data']:
+                        del link_dictionary[x]
+
+            # update keys
+
+            for key in updated_keys:
+                if key.key in link_dictionary:
+                    updated_keys(link_dictionary, key)
+                if 'data' in link_dictionary and key.key in link_dictionary:
+                    updated_keys(link_dictionary, key)
+
+            # convert to json to push up
+            payload = json.dumps(link_dictionary)
+            put_request_url = branch_endpoint + url
+            response = requests.put(put_request_url, json=payload)
+
+            if response.status_code != 200:
+                raise Exception('Could not edit the link: {} payload: {}'.format(url, payload))
+
+
+def update_key(link_dictonary, replacement):
+    """Update the Key in the link dictionary and its value
+
+    Given a dictionary, update the dictionary accordingly based off the values in the replacement
+
+    collections.namedtuple('Branch_kv_pair', 'key new_key value')
+
+
+    :param link_dictonary: dict() of link data
+    :param replacement: Branch_kv_pair named tuple: of replacement data
+    :return: None
+    """
+    # update the value first
+    if replacement.value:
+        link_dictonary[replacement.key] = replacement.value
+    # update key name if applicable
+    if replacement.new_key:
+        link_dictonary[replacement.new_key] = link_dictonary[replacement.key]
+        del link_dictonary[replacement.key]

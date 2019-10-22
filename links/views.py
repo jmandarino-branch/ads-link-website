@@ -1,3 +1,4 @@
+import collections
 import json
 import os
 import mimetypes
@@ -13,14 +14,16 @@ from wsgiref.util import FileWrapper
 from branchlinks import constants
 from .models import Link, LinkDefault
 from .ctd_service import ctd_service_driver, ClickTrackingParsingError
-from .utils import  create_deeplink_feeds, process_csv, process_kv_only, process_email_link
+from .utils import  create_deeplink_feeds, process_csv, process_kv_only, process_email_link, update_links
 
 from links.models import Template
 
+Branch_kv_pair = collections.namedtuple('Branch_kv_pair', 'key new_key value')
 
 # because of how fragile this could be its best to define for some kind of consistency
 HTML_KEY = 'key_'
 HTML_VALUE = 'value_'
+HTML_NEW_KEY = 'new_key_'
 
 
 @login_required(login_url=constants.LOGIN_URL)
@@ -178,6 +181,36 @@ def product_feeds(request):
     return render(request, 'product_feeds.html', response_dict)
 
 
+def link_updater(request):
+    response_dict = {}
+
+    if request.method == 'POST':
+        # persist the branch key and secret
+        branch_key = request.POST.get('branch_key')
+        branch_secret = request.POST.get('branch_secret')
+
+        response_dict['branch_key'] = branch_key
+        response_dict['branch_secret'] = branch_secret
+
+        if '' in [branch_key, branch_secret]:
+            response_dict['error'] = "Please enter a Branch Key and Secret"
+            response_dict['branch_key_error'] = True
+            return render(request, 'link_updater.html', response_dict)
+
+    if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
+        file = request.FILES['uploaded_file']
+
+        # handle extra inputs
+        post_dict = request.POST.dict()
+        kv_list = get_key_value_group_from_html(post_dict)
+
+        try:
+            update_links(file, branch_key, branch_secret, kv_list)
+        except Exception as e:
+            response_dict['error'] = e
+
+    return render(request, 'link_updater.html', response_dict)
+
 def email_debugger(request):
     response_dict = {
         'ORIGINAL_URL': constants.ORIGINAL_URL,
@@ -214,6 +247,29 @@ def email_debugger(request):
 
 
     return render(request, 'email_debugger.html', response_dict)
+
+def get_key_value_group_from_html(dictionary):
+    """Processes HTML input fields and builds branch_kv_pair tuples
+
+    process the key values pairs. Keys are denoted by the input fields name="key_(key_name)"
+    values are denoted with input fields name="value_(value_name)" and name="new_key_(key name)
+    :param dictionary: (dict{ str:str }) values from request data sent by frontend
+    :return: dictionary with properly named KV pairs
+
+    :param dictionary:
+    :return: list (tuples)
+    """
+
+    output = []
+    for k in dictionary.keys():
+        if k.startswith(HTML_KEY):
+            key_name = k.split(HTML_KEY, 1)[1]  # split only once on the
+            value_name = HTML_VALUE + key_name
+            new_key_name = HTML_NEW_KEY + key_name
+            branch_key = Branch_kv_pair(dictionary.get(k),
+                                        new_key=dictionary.get(new_key_name), value=dictionary.get(value_name))
+            output.append(branch_key)
+    return output
 
 
 def get_key_value_pairs_from_html(dictionary):
