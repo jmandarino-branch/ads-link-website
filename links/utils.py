@@ -215,7 +215,7 @@ def update_links(filename, branch_key, branch_secret, updated_keys):
             link_read_url = '{}{}{}{}'.format(branch_endpoint, url, "&branch_key=", branch_key)
             response = requests.get(link_read_url)
             if response.status_code != 200:
-                raise Exception('Could not read url: {}'.format(url))
+                raise Exception('Line:{} Could not read url: {}'.format(csv_reader.line_num, url))
             link_dictionary = json.loads(response.text)
 
             link_dictionary['branch_key'] = branch_key
@@ -244,7 +244,7 @@ def update_links(filename, branch_key, branch_secret, updated_keys):
             response = requests.put(put_request_url, json=link_dictionary)
 
             if response.status_code != 200:
-                raise Exception('Could not edit the link: {} payload: {}'.format(url, payload))
+                raise Exception('Line:{} Could not edit the link: {} payload: {}'.format(csv_reader.line_numm, url, payload))
 
 
 def update_key(link_dictonary, replacement):

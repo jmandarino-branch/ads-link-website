@@ -17,6 +17,12 @@
         <div class="alert alert-danger" role="alert">
           Error: {{ error }}
         </div>
+    {% elif success %}
+                    <div class="">
+        <div class="alert alert-success" role="alert">
+          Successfully updated!
+        </div>
+
     {% endif %}
             {% csrf_token %}
             <div class="input-group mb-3">
@@ -48,6 +54,12 @@
             <div id="kvpairs" class="form-group">
                 <!-- Key value pairs. the name of the items are based of what the key is -->
             <h5>Keys to updated</h5>
+                <div class="alert alert-primary" role="alert">
+                    From left to right -- note changes will be made to <strong>all</strong> links <br>
+                    Current Key Name: Is the current key found in the links (case senstivie) e.g $canonical_url, ~campaign <br>
+                    New Key (optional): What we will rename the above key to. e.g utm_campaign (as the current key) can become ~campaign<br>
+                    New Value: A value to apply to <strong>all links</strong>
+                </div>
 
                     <div class="form-inline mb-1">
                         <input class="form-control" name="key_current" type="text" value="{{ k }}" placeholder="Current Key Name">

@@ -213,6 +213,7 @@ def link_updater(request):
                 path = default_storage.save(os.path.join('tmp', file.name),
                                             ContentFile(file.read()))
                 update_links(path, branch_key, branch_secret, kv_list)
+                response_dict['success'] = True
             except Exception as e:
                 response_dict['error'] = e
 
