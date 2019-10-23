@@ -186,16 +186,20 @@ def link_updater(request):
 
     if request.method == 'POST':
         # persist the branch key and secret
-        branch_key = request.POST.get('branch_key')
-        branch_secret = request.POST.get('branch_secret')
+        branch_key = request.POST.get('branch_key', None)
+        branch_secret = request.POST.get('branch_secret', None)
 
         response_dict['branch_key'] = branch_key
         response_dict['branch_secret'] = branch_secret
 
-        if '' in [branch_key, branch_secret]:
+        if not branch_key or not branch_secret or '' in [branch_key, branch_secret]:
             response_dict['error'] = "Please enter a Branch Key and Secret"
             response_dict['branch_key_error'] = True
             return render(request, 'link_updater.html', response_dict)
+        else:
+            branch_key = branch_key.strip()
+            branch_secret = branch_secret.strip()
+
 
     if request.method == 'POST' and len(request.FILES) > 0 and request.FILES['uploaded_file']:
         file = request.FILES['uploaded_file']
@@ -204,10 +208,13 @@ def link_updater(request):
         post_dict = request.POST.dict()
         kv_list = get_key_value_group_from_html(post_dict)
 
-        try:
-            update_links(file, branch_key, branch_secret, kv_list)
-        except Exception as e:
-            response_dict['error'] = e
+        if file.name.endswith('.csv') or file.name.endswith('.tsv'):
+            try:
+                path = default_storage.save(os.path.join('tmp', file.name),
+                                            ContentFile(file.read()))
+                update_links(path, branch_key, branch_secret, kv_list)
+            except Exception as e:
+                response_dict['error'] = e
 
     return render(request, 'link_updater.html', response_dict)
 

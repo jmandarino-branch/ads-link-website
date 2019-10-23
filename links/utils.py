@@ -203,7 +203,7 @@ def write_csv(filename, row, mode):
 
 
 def update_links(filename, branch_key, branch_secret, updated_keys):
-    branch_endpoint = 'https://api.branch.io/v1/url?url='
+    branch_endpoint = 'https://api2.branch.io/v1/url?url='
 
     with open(filename) as csv_file:
         dialect = csv.Sniffer().sniff(csv_file.read(1024))
@@ -228,20 +228,20 @@ def update_links(filename, branch_key, branch_secret, updated_keys):
 
                 if 'data' in link_dictionary:
                     if x in link_dictionary['data']:
-                        del link_dictionary[x]
+                        del link_dictionary['data'][x]
 
             # update keys
 
             for key in updated_keys:
                 if key.key in link_dictionary:
-                    updated_keys(link_dictionary, key)
-                if 'data' in link_dictionary and key.key in link_dictionary:
-                    updated_keys(link_dictionary, key)
+                    update_key(link_dictionary, key)
+                if 'data' in link_dictionary and key.key in link_dictionary['data']:
+                    update_key(link_dictionary['data'], key)
 
             # convert to json to push up
             payload = json.dumps(link_dictionary)
             put_request_url = branch_endpoint + url
-            response = requests.put(put_request_url, json=payload)
+            response = requests.put(put_request_url, json=link_dictionary)
 
             if response.status_code != 200:
                 raise Exception('Could not edit the link: {} payload: {}'.format(url, payload))
