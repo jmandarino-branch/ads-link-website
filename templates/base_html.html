@@ -10,6 +10,31 @@
     {% load static %}
 </head>
 <body>
+<nav class="navbar  navbar-expand-lg  navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Link Creators</a>
+    <div class="collapse navbar-collapse" id="navbarText">
+
+    <ul class="navbar-nav mr-auto">
+
+        {% if user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'adlinks' %}">Ad links</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'email_links' %}">Email Links</a>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link" href="{% url 'product_feeds' %}">Product Feeds</a>
+      </li>
+        {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'link_updater' %}">Link Updater</a>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link" href="{% url 'email_debugger' %}">Email Debugger</a>
+      </li>
+    </ul>
+</nav>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
